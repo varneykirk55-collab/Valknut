@@ -144,32 +144,46 @@ same game. Making them match means redrawing the Valkyrie's game frames from her
 existing reference design (not a redesign), through the same art-set system, as
 `frames_v2` for `valkyrie`.
 
-## 6. Idle frames review (idle_01–03 supplied)
+## 6. Idle frames (second set, in use)
 
-The originals are kept unchanged in `valknut/art/source/berserker_v2_supplied/`.
-Previews are in `docs/previews/berserker_v2/idle/`.
+**Source:** `valknut/art/source/berserker_v2_idle_v2/berserker_v2_idle_strip.png`, a
+transparent strip of three poses. `tools/import_strip.py` splits it and writes
+`frames_v2/berserker_idle_01–03.png`:
+- One shared scale (0.3176) for all three poses, set so idle_01 is 208 px tall. Each
+  pose keeps its own height, which preserves any breathing in the drawings.
+- Each pose is placed with its feet midpoint at x = 256 and its lowest pixel at y = 248.
+- Nothing is redrawn or distorted.
 
-- **Format:** all three frames are 512×256 RGBA with a transparent background, facing
-  right, the bottom at y = 248, and 208 px tall. They pass.
-- **Design:** all three match the reference sheet: face, braids, beard, warpaint, fur
-  mantle, gold-studded leather, crimson cloth, both axes and fur-trimmed boots.
-- **Alignment:** idle_01 and idle_02 share the same foot pixels. idle_03 was drawn
-  **14 px right** of the anchor (its feet midpoint is at x = 270.5).
-  - It has been shifted on its canvas only, using `tools/align_frame.py idle_03 -14 0`.
-    The art itself is untouched.
-  - idle_03's stance is also 9 px wider, so its feet still move about 3–6 canvas px
-    (about 2–4 screen px) relative to the other frames. That's in the drawing, so it
-    isn't corrected.
-- **Does it read as breathing? No.**
-  - idle_01 and idle_02 are almost identical: small changes to the hair and axe angle,
-    with the shoulders and chest at the same height.
-  - idle_03 is a different pose: wider stance, cape flared, axes lower, hair blown.
-  - All three are exactly 208 px tall with the head top at y = 40, so there's no chest
-    or shoulder rise in the art.
-  - In motion it reads as a snap to another pose every 15 frames, softened only by the
-    existing 2 px procedural bob.
-- **Needed to finish the idle:**
-  - redraw idle_02 and idle_03 as the *same* pose as idle_01, with only the
-    chest/shoulders/mantle rising about 3 px and 5 px (and head and arms riding along);
-  - feet on exactly the same pixels;
-  - same stance width and same cape shape.
+**Backups:** the first idle set is in `valknut/art/source/berserker_v2_idle_previous/`.
+That folder holds the files as supplied, plus `berserker_idle_03_in_game.png` (the copy
+that was shifted 14 px). Previews are in `docs/previews/berserker_v2/idle/`
+(`v2_*` files are this set).
+
+**Alignment, measured on the 512×256 canvas, relative to idle_01:**
+
+| | idle_02 | idle_03 |
+|---|---|---|
+| Feet | identical pixels | identical pixels (front toe +1 px) |
+| Head top | 1 px up | 2 px down |
+| Shoulders | same (1 px) | 1–3 px narrower |
+| Axe heads | 1–3 px outward | 3–6 px outward |
+| Height | 209 px | 206 px |
+
+The idle cycle is `idle_01 → 02 → 03 → 02` at frames 0/15/30/45 of the existing 60-frame
+idle, which already reverses. The timing is unchanged.
+
+**In motion (Godot 4.7.2, 4 cycles recorded):**
+- He stays grounded, with no sliding or teleporting, no scale change, no missing
+  textures and no transparency fringe.
+- The silhouette and design stay consistent.
+- The image change at each pose switch is about half the first set's (mean 5.1 vs 7.3).
+
+**Remaining defect:**
+- The three poses were drawn separately, so fine line work differs at each switch: hair
+  strands, fur tufts, braids and some face lines.
+- At game scale this reads as a light shimmer in the hair and fur every 15 frames, not
+  a pose snap.
+- The breathing in the drawings is very small (head ±1–2 px). Most of the visible
+  breathing still comes from the existing procedural bob.
+- Acceptable as a working idle. A final polish pass would trace idle_02 and idle_03
+  over idle_01 so only the chest, shoulders and mantle move.
