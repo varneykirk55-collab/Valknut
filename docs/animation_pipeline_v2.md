@@ -206,3 +206,24 @@ idle, which already reverses. The timing is unchanged.
   frames (frame 3 onward) currently drop to the side-view placeholder, which is a
   visible design and facing snap. The light attack isn't complete until they're drawn.
 - Previews are in `docs/previews/berserker_v2/light/`.
+
+### Light attack: `light_contact` added (2 of 5 poses)
+
+- **Source:** `valknut/art/source/berserker_v2_light/berserker_light_contact_supplied.png`.
+  It has a painted glow backdrop plus an error overlay.
+- **Cut-out:** `tools/cut_painted_background.py` (needs OpenCV) uses the outline as a wall
+  and flood-fills the smooth backdrop from the image border.
+  - Result: `..._contact_source.png`, which is clean. Both blades are intact, there's no
+    halo, and no background is trapped inside the figure (see
+    `docs/previews/berserker_v2/light/lc_cutout_check.png`).
+- **Scale:** belt buckle about 107 source px → 20 canvas px, scale 0.1865.
+- **Placement:** feet anchor set by hand (`--anchor-x=734`), because the front axe blade
+  sits beside the front boot and fooled the automatic detection.
+- **Known issues:**
+  - The front axe head sits low, from floor level to about 34 game px up. The light
+    hitbox is 32–72 px up, so the blade passes under it; the arm and torso cover it.
+  - Hair and colours are brighter and more saturated than the idle and wind-up frames,
+    which shows as a colour jump at contact.
+  - The rear boot sole is about 4 canvas px above the front one.
+  - Smear (1 frame between the wind-up and contact), recovery and settle are still
+    placeholders, so the attack still snaps.

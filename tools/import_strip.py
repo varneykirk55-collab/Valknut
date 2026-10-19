@@ -1,13 +1,15 @@
 """Split a transparent strip of N poses into art-set frames with ONE shared scale.
 
     python3 tools/import_strip.py <strip.png> <out_prefix> [--height=208]
-        [--canvas=512x256 --feet=256,248]
+        [--canvas=512x256 --feet=256,248] [--anchor-x=X]
 
 Poses are found by empty columns between them. The scale is set so the FIRST pose is
 --height px tall and the same factor is used for every pose (normalising each pose to
 the same height would hide or invent breathing). Each pose is then placed so the
 midpoint between its feet (outer edges of the lowest row showing both boots) sits on
 --feet x, and its lowest pixel on --feet y. Writes <out_prefix>_01.png, _02.png, ...
+--anchor-x overrides the detected feet midpoint (x in the input image) for a single
+pose whose boots can't be told apart automatically (e.g. an axe blade beside a boot).
 """
 import sys
 from PIL import Image
@@ -53,11 +55,19 @@ def main(a):
     alpha = strip.getchannel("A").point(lambda v: 255 if v > 128 else 0)
     ap = alpha.load()
     cols = segments(lambda x: any(ap[x, y] for y in range(strip.height)), strip.width)
-    poses = [strip.crop((x0, 0, x1, strip.height)) for x0, x1 in cols if x1 - x0 > 40]
-    poses = [p.crop(p.getchannel("A").point(lambda v: 255 if v > 128 else 0).getbbox()) for p in poses]
+    poses, lefts = [], []
+    for x0, x1 in cols:
+        if x1 - x0 <= 40:
+            continue
+        p = strip.crop((x0, 0, x1, strip.height))
+        bb = p.getchannel("A").point(lambda v: 255 if v > 128 else 0).getbbox()
+        poses.append(p.crop(bb))
+        lefts.append(x0 + bb[0])
+    if "anchor-x" in opts and len(poses) != 1:
+        sys.exit("--anchor-x needs a single-pose image")
     scale = height / poses[0].height
     for i, p in enumerate(poses, 1):
-        mid = feet_mid(p)
+        mid = float(opts["anchor-x"]) - lefts[0] if "anchor-x" in opts else feet_mid(p)
         p = p.resize((round(p.width * scale), round(p.height * scale)), Image.LANCZOS)
         canvas = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
         canvas.alpha_composite(p, (round(fx - mid * scale), fy - p.height))

@@ -1,13 +1,14 @@
-[gd_resource type="SpriteFrames" load_steps=6 format=3]
+[gd_resource type="SpriteFrames" load_steps=7 format=3]
 
 [ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames_v2/berserker_idle_01.png" id="1_idle_01"]
 [ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames_v2/berserker_idle_02.png" id="2_idle_02"]
 [ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames_v2/berserker_idle_03.png" id="3_idle_03"]
 [ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames_v2/berserker_light_anticipation.png" id="4_light_anticipation"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames_v2/berserker_ref_side.png" id="5_ref_side"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames_v2/berserker_light_contact.png" id="5_light_contact"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames_v2/berserker_ref_side.png" id="6_ref_side"]
 
 [resource]
-metadata/placeholders = PackedStringArray("walk_01", "walk_02", "walk_03", "walk_04", "jump", "fall", "hurt", "attack_startup", "attack_active", "attack_recovery", "right_anticipation", "right_smear", "right_contact", "right_follow", "left_anticipation", "left_smear", "left_contact", "left_follow", "overhead_windup", "overhead_smear", "overhead_contact", "overhead_impact", "heavy_windup", "heavy_charge", "heavy_smear", "heavy_contact", "heavy_recovery", "light_smear", "light_contact", "light_recovery", "light_settle")
+metadata/placeholders = PackedStringArray("walk_01", "walk_02", "walk_03", "walk_04", "jump", "fall", "hurt", "attack_startup", "attack_active", "attack_recovery", "right_anticipation", "right_smear", "right_contact", "right_follow", "left_anticipation", "left_smear", "left_contact", "left_follow", "overhead_windup", "overhead_smear", "overhead_contact", "overhead_impact", "heavy_windup", "heavy_charge", "heavy_smear", "heavy_contact", "heavy_recovery", "light_smear", "light_recovery", "light_settle")
 metadata/sprite_scale = Vector2(0.5, 0.5)
 metadata/sprite_offset = Vector2(0, -120)
 animations = [{
@@ -21,7 +22,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"walk_01",
@@ -29,7 +30,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"walk_02",
@@ -37,7 +38,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"walk_03",
@@ -45,7 +46,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"walk_04",
@@ -53,7 +54,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"jump",
@@ -61,7 +62,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"fall",
@@ -69,7 +70,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"hurt",
@@ -77,7 +78,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"attack_startup",
@@ -85,7 +86,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"attack_active",
@@ -93,7 +94,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"attack_recovery",
@@ -101,7 +102,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"right_anticipation",
@@ -109,7 +110,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"right_smear",
@@ -117,7 +118,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"right_contact",
@@ -125,7 +126,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"right_follow",
@@ -133,7 +134,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"left_anticipation",
@@ -141,7 +142,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"left_smear",
@@ -149,7 +150,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"left_contact",
@@ -157,7 +158,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"left_follow",
@@ -165,7 +166,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"overhead_windup",
@@ -173,7 +174,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"overhead_smear",
@@ -181,7 +182,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"overhead_contact",
@@ -189,7 +190,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"overhead_impact",
@@ -197,7 +198,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"heavy_windup",
@@ -205,7 +206,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"heavy_charge",
@@ -213,7 +214,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"heavy_smear",
@@ -221,7 +222,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"heavy_contact",
@@ -229,7 +230,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"heavy_recovery",
@@ -269,7 +270,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"light_smear",
@@ -277,7 +278,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("5_light_contact")
 }],
 "loop": false,
 "name": &"light_contact",
@@ -285,7 +286,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"light_recovery",
@@ -293,7 +294,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_ref_side")
+"texture": ExtResource("6_ref_side")
 }],
 "loop": false,
 "name": &"light_settle",
