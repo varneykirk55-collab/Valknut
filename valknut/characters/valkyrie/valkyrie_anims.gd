@@ -9,24 +9,25 @@ extends RefCounted
 ## (spins, aiming the thrust down for down-attacks), Body position (lunges, bobs),
 ## Rig scale (squash, facing flips), Rig tint (ghosting) and SlashFX effects.
 
-const FRAME := "Rig/Body/Sprite:frame"
+## Pose track: names an animation in <legend>_frames.tres (one per pose / pose slot).
+const FRAME := "Rig/Body/Sprite:animation"
 const BODY_POS := "Rig/Body:position"
 const BODY_ROT := "Rig/Body:rotation"
 const RIG_SCALE := "Rig:scale"
 const RIG_TINT := "Rig:modulate"
 
-# Frame indices in the "frames" strip of valkyrie_frames.tres.
-const IDLE := 0
-const WALK_1 := 1
-const WALK_2 := 2
-const WALK_3 := 3
-const WALK_4 := 4
-const JUMP := 5
-const FALL := 6
-const HURT := 7
-const STARTUP := 8
-const ACTIVE := 9      ## deep thrust, motion lines drawn in
-const RECOVERY := 10
+# Base poses (cut from the source sheet). Combo/heavy poses are named slots (pose_slots.py).
+const IDLE := &"idle"
+const WALK_1 := &"walk_01"
+const WALK_2 := &"walk_02"
+const WALK_3 := &"walk_03"
+const WALK_4 := &"walk_04"
+const JUMP := &"jump"
+const FALL := &"fall"
+const HURT := &"hurt"
+const STARTUP := &"attack_startup"
+const ACTIVE := &"attack_active"      ## deep thrust, motion lines drawn in
+const RECOVERY := &"attack_recovery"
 
 const BODY := Vector2(0, -42)
 const GHOST := Color(1, 1, 1, 0.45)
@@ -42,7 +43,7 @@ const DEFAULT_POSE := {
 
 
 ## Startup → active → recovery → `end` frame (idle on the ground, fall in the air).
-static func strike(startup: int, active: int, recovery: int, back: int, end := IDLE, first := STARTUP) -> Array:
+static func strike(startup: int, active: int, recovery: int, back: int, end: StringName = IDLE, first: StringName = STARTUP) -> Array:
 	var keys := [[startup, STARTUP], [active, ACTIVE], [recovery, RECOVERY], [back, end]]
 	if startup > 0:
 		keys.push_front([0, first])
@@ -78,20 +79,26 @@ static func build() -> AnimationLibrary:
 	b.add("fall", 1, false, {FRAME: FALL})
 	b.add("land", 6, false, {FRAME: [[0, STARTUP], [4, IDLE]], RIG_SCALE: [[0, Vector2(1.15, 0.82)], [6, Vector2.ONE]]})
 
-	# --- Jab string ---------------------------------------------------------------------
+	# --- Neutral combo: Spear Slash → Shield Bash → Spear Finisher -----------------------
+	# Each hit: anticipation → smear (acceleration) → contact (on the first hitbox frame)
+	# → follow-through, and each follow-through pose leads into the next hit's
+	# anticipation. Poses are named slots (tools/pose_slots.py); undrawn slots show a
+	# placeholder frame (listed in the F1 debug view). Motion here is only real weight
+	# transfer — the swing itself has to come from the drawings.
 	b.add("jab1", 18, false, {
-		FRAME: strike(0, 3, 8, 14),
-		BODY_POS: [[0, BODY + Vector2(-2, 0)], [3, BODY + Vector2(4, 0)], [10, BODY]],
+		FRAME: [[0, &"slash_anticipation"], [2, &"slash_smear"], [3, &"slash_contact"], [6, &"slash_follow"],
+			[13, RECOVERY], [16, IDLE]],
+		BODY_POS: [[0, BODY + Vector2(-2, 1)], [3, BODY + Vector2(3, 0)], [12, BODY]],
 	})
-	b.add("jab2", 20, false, SlashFX.with({  # shield bash: step in shield-first
-		FRAME: [[0, STARTUP], [4, WALK_2], [10, RECOVERY], [16, IDLE]],
-		BODY_POS: [[0, BODY + Vector2(-2, 0)], [4, BODY + Vector2(10, 0)], [12, BODY + Vector2(10, 0)], [20, BODY]],
-		RIG_SCALE: [[0, Vector2.ONE], [4, Vector2(1.08, 0.94)], [12, Vector2.ONE]],
-	}, SlashFX.arc(Vector2(14, -46), 28, -70, 70, 10, GOLD, 4, 2, 3)))
+	b.add("jab2", 20, false, SlashFX.with({  # the step forward is real movement (velocity key)
+		FRAME: [[0, &"bash_anticipation"], [4, &"bash_contact"], [9, &"bash_follow"], [15, RECOVERY], [18, IDLE]],
+		BODY_POS: [[0, BODY + Vector2(-3, 1)], [4, BODY + Vector2(4, 0)], [12, BODY + Vector2(2, 0)], [20, BODY]],
+	}, SlashFX.ring(Vector2(30, -46), 16, 6, Color(1, 1, 1), 4, 8, 0.25)))  # shield impact burst
 	b.add("jab3", 34, false, {
-		FRAME: strike(0, 7, 18, 28),
-		BODY_POS: [[0, BODY + Vector2(-6, 2)], [6, BODY + Vector2(-8, 2)], [7, BODY + Vector2(6, 0)],
-			[22, BODY + Vector2(6, 0)], [34, BODY]],
+		FRAME: [[0, &"finisher_windup"], [6, &"finisher_smear"], [7, &"finisher_contact"], [12, &"finisher_follow"],
+			[22, RECOVERY], [30, IDLE]],
+		BODY_POS: [[0, BODY + Vector2(-4, 2)], [5, BODY + Vector2(-6, 2)], [7, BODY + Vector2(4, 0)],
+			[22, BODY + Vector2(4, 0)], [34, BODY]],
 	})
 
 	# --- Tilts / smashes -------------------------------------------------------------
@@ -105,11 +112,11 @@ static func build() -> AnimationLibrary:
 		RIG_SCALE: [[0, Vector2(1.04, 0.9)], [6, Vector2(1.04, 0.84)], [14, Vector2.ONE]],
 	})
 	b.add("fsmash", 52, false, {
-		# Crouched wind-up (held while charging), then the full lunge.
-		FRAME: strike(4, 13, 30, 44, IDLE, IDLE),
-		BODY_ROT: [[0, 0.0], [9, -0.08], [13, 0.0]],
+		# Heavy spear: its own stance, a held charge pose, an explosive lunge, a long
+		# overextended recovery. Charge holds on frame 9 (heavy_charge).
+		FRAME: [[0, &"heavy_windup"], [6, &"heavy_charge"], [12, &"heavy_smear"], [14, &"heavy_contact"],
+			[24, &"heavy_recovery"], [44, IDLE]],
 		BODY_POS: [[0, BODY], [9, BODY + Vector2(-10, 3)], [13, BODY + Vector2(8, 0)], [30, BODY + Vector2(8, 0)], [52, BODY]],
-		RIG_SCALE: [[0, Vector2.ONE], [9, Vector2(1.04, 0.92)], [13, Vector2.ONE]],
 	})
 	b.add("dsmash", 48, false, SlashFX.with({
 		FRAME: [[0, STARTUP], [10, ACTIVE], [30, RECOVERY], [40, IDLE]],

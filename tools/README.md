@@ -1,18 +1,13 @@
-# Sprite pipeline
+# Sprite & animation tools (Python 3 + Pillow)
 
-`cut_frames.py` turns the labelled sheets in `valknut/art/source/` (`valkyrie_sheet.jpg`,
-`berserker_sheet.jpg`) into the game's frames:
+| Script | What it does |
+|---|---|
+| `cut_frames.py` | Cuts the labelled sheets in `valknut/art/source/` into `characters/<legend>/frames/<legend>_<pose>.png` (transparent, 128×128, feet at (64,124); `attack_active` 256×128). |
+| `pose_slots.py` | The list of combo/heavy pose slots per legend: art brief, canvas size and placeholder fallback for each. |
+| `build_sprite_frames.py` | Writes `<legend>_frames.tres`: one SpriteFrames animation per pose (the game keys them by name). Slots without a PNG use their fallback and are recorded as placeholders. |
+| `make_art_requests.py` | Writes `docs/art_requests/<legend>.md` + `<legend>_template.png` (per-slot brief, on-screen timing parsed from the anims, sized template cells). |
+| `combo_filmstrip.py` | Lays out `screenshot.tscn --combo-film` captures as a labelled filmstrip. |
 
-```
-python3 tools/cut_frames.py        # needs Python 3 + Pillow
-```
-
-Output: `valknut/characters/<legend>/frames/<legend>_<pose>.png` for
-idle, walk_01–04, jump, fall, hurt, attack_startup, attack_active, attack_recovery.
-Frames are 128×128 (attack_active 256×128) with a transparent background and the feet
-at (64, 124). The Berserker sheet has one drawing for jump and fall; it's saved as both.
-
-Each legend's `<legend>_frames.tres` (SpriteFrames) references these files: named
-animations (`idle`, `walk`, `jump`, …, `attack`) for editor use, plus a `frames` strip
-with every pose in a fixed order that the game's AnimationPlayer keys by index
-(see the frame constants at the top of `<legend>_anims.gd`).
+Adding new combo/heavy art: save `valknut/characters/<legend>/frames/<legend>_<slot>.png`
+(see `docs/art_requests/`), then run `python3 tools/build_sprite_frames.py`. Re-run
+`make_art_requests.py` after changing animation timing.

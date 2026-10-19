@@ -22,6 +22,12 @@ func _ready() -> void:
 	_streams["hit_heavy"] = _thump(0.22, 75.0, 0.7, 0.85)
 	_streams["ko"] = _thump(0.7, 55.0, 0.9, 1.0)
 	_streams["swing"] = _noise_sweep(0.08, 0.18)
+	_streams["swing_heavy"] = _noise_sweep(0.16, 0.22)
+	_streams["spear_slash"] = _mix(_thump(0.06, 260.0, 0.7, 0.45), _tone_sweep(0.06, 1400.0, 900.0, 0.12))
+	_streams["shield_bash"] = _mix(_thump(0.14, 110.0, 0.5, 0.7), _square(0.1, 330.0, 0.12))
+	_streams["spear_finisher"] = _mix(_thump(0.16, 95.0, 0.7, 0.75), _tone_sweep(0.1, 1600.0, 700.0, 0.12))
+	_streams["axe_light"] = _mix(_thump(0.08, 150.0, 0.8, 0.55), _noise_sweep(0.05, 0.1))
+	_streams["axe_heavy"] = _mix(_thump(0.28, 55.0, 0.9, 0.95), _noise_sweep(0.12, 0.14))
 	_streams["jump"] = _tone_sweep(0.07, 260.0, 520.0, 0.25)
 	_streams["land"] = _thump(0.05, 90.0, 0.2, 0.25)
 	_streams["dodge"] = _noise_sweep(0.12, 0.12)
@@ -54,6 +60,18 @@ func play_hit(damage: float) -> void:
 
 
 # --- synthesis helpers -------------------------------------------------------
+
+## Layers two sounds (the shorter one is padded with silence).
+func _mix(a: AudioStreamWAV, b: AudioStreamWAV) -> AudioStreamWAV:
+	var n := maxi(a.data.size(), b.data.size()) / 2
+	var out := PackedFloat32Array()
+	out.resize(n)
+	for i in n:
+		var va := a.data.decode_s16(i * 2) / 32767.0 if i * 2 < a.data.size() else 0.0
+		var vb := b.data.decode_s16(i * 2) / 32767.0 if i * 2 < b.data.size() else 0.0
+		out[i] = va + vb
+	return _wav(out)
+
 
 func _wav(samples: PackedFloat32Array) -> AudioStreamWAV:
 	var data := PackedByteArray()

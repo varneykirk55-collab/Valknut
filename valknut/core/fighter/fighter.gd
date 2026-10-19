@@ -100,6 +100,11 @@ var charge_mult := 1.0
 var charge_button := "attack"
 ## Freezes the AnimationPlayer (smash charge hold).
 var anim_hold := false
+## Frames of white flash left on the victim of a hit (hit confirmation).
+var hit_flash := 0
+## Pose slots still drawn with stand-in art (from the SpriteFrames' "placeholders" meta).
+var placeholder_poses := PackedStringArray()
+static var _warned_placeholders := {}
 
 var sm := FighterStateMachine.new()
 var _used_air_moves := {}
@@ -143,6 +148,7 @@ func _ready() -> void:
 	var outfit: Dictionary = outfits[(player_index - 1) % outfits.size()].duplicate()
 	outfit["tag"] = player_colors.tag
 	apply_palette(outfit)
+	_read_placeholders()
 	for state_name in STATES:
 		sm.add(state_name, STATES[state_name].new(), self)
 	air_jumps_left = stats.air_jumps
@@ -209,6 +215,9 @@ func tick() -> void:
 		# Only the victim shakes; the shake sells the impact and reminds you to DI.
 		if not pending_launch.is_empty():
 			visual.position = Vector2(randf_range(-3, 3), randf_range(-2, 2))
+		if hit_flash > 0:
+			hit_flash -= 1
+			visual.modulate = Color(2.2, 2.2, 2.2) if hit_flash > 0 else Color.WHITE
 		if hitlag == 0:
 			visual.position = Vector2.ZERO
 			if not pending_launch.is_empty():
@@ -570,6 +579,7 @@ func receive_hit(attacker: Fighter, data: HitboxData, damage_mult := 1.0) -> voi
 		"hitstun": Knockback.hitstun_frames(kb, combo_count),
 	}
 	hitlag = Knockback.hitlag_frames(damage, data.hitlag_mult)
+	hit_flash = 4
 	vel = Vector2.ZERO
 	kb_velocity = Vector2.ZERO
 	fast_falling = false
@@ -677,6 +687,25 @@ func play_anim(anim_name: String, restart := false) -> void:
 
 ## Applies a costume: recolours ShapeParts by palette slot and, for sprite legends,
 ## hue-shifts the sprite when the costume has a "hue_shift" entry.
+## Pose slots without their own drawing yet are flagged, never silently passed off as
+## finished art: one warning per legend, and a label in the F1 debug view.
+func _read_placeholders() -> void:
+	var sprite := rig.find_child("Sprite", true, false) as AnimatedSprite2D
+	if sprite == null or sprite.sprite_frames == null or not sprite.sprite_frames.has_meta("placeholders"):
+		return
+	placeholder_poses = sprite.sprite_frames.get_meta("placeholders")
+	if not placeholder_poses.is_empty() and not _warned_placeholders.has(stats.display_name):
+		_warned_placeholders[stats.display_name] = true
+		push_warning("%s: %d combo/heavy pose(s) use placeholder art (see docs/combat_animation.md): %s"
+			% [stats.display_name, placeholder_poses.size(), ", ".join(placeholder_poses)])
+
+
+## Name of the pose currently shown (a SpriteFrames animation name).
+func current_pose() -> StringName:
+	var sprite := rig.find_child("Sprite", true, false) as AnimatedSprite2D
+	return sprite.animation if sprite else &""
+
+
 func apply_palette(colors: Dictionary) -> void:
 	tag_color = colors.get("tag", Color.WHITE)
 	for node in rig.find_children("*", "ShapePart", true, false):
@@ -718,6 +747,10 @@ func _draw_overlay() -> void:
 		_overlay.draw_rect(Rect2(r.position - global_position, r.size), Color(1, 0.1, 0.1, 0.45))
 	_overlay.draw_string(ThemeDB.fallback_font, Vector2(-30, 16), String(sm.current_name),
 		HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.WHITE)
+	var pose := current_pose()
+	if pose in placeholder_poses:
+		_overlay.draw_string(ThemeDB.fallback_font, Vector2(-60, top - 26), "PLACEHOLDER: %s" % pose,
+			HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1.0, 0.6, 0.1))
 
 
 # --- Moves every legend gets ------------------------------------------------------

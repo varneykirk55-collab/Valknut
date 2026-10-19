@@ -28,6 +28,7 @@ func _ready() -> void:
 static func _make_stats() -> FighterStats:
 	var s := FighterStats.new()
 	s.display_name = "Valkyrie"
+	s.archetype = "Vanguard"
 	s.weight = 92.0
 	s.walk_speed = 290.0
 	s.dash_speed = 640.0

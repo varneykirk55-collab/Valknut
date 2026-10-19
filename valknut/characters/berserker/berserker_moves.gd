@@ -11,28 +11,35 @@ extends RefCounted
 static func build(b: Berserker) -> Dictionary:
 	var m := {}
 
-	# --- Jab string: alternating hand-axe swings ------------------------------------
-	var jab1 := MoveData.make("jab1", 20)  # front axe
+	# --- Neutral combo: Right Axe → Left Axe → Double-Axe Overhead -------------------------
+	# Original jab damage/angles/knockback. Hitboxes follow the new swing paths: two
+	# diagonal cuts, then an overhead chop that covers from above his head to the floor.
+	var jab1 := MoveData.make("jab1", 20)  # right axe, diagonal
 	jab1.grounded = true
 	jab1.land_cancels = false
 	jab1.chain_to = "jab2"
 	jab1.chain_from = 9
-	jab1.hit(HitboxData.make(4, 5, Vector2(44, -50), Vector2(48, 26), 4, 70, 30, 25))
+	jab1.hit(HitboxData.make(4, 5, Vector2(42, -52), Vector2(50, 40), 4, 70, 30, 25).with_sfx("axe_light"))
 	m[jab1.id] = jab1
 
-	var jab2 := MoveData.make("jab2", 22)  # back axe
+	var jab2 := MoveData.make("jab2", 22)  # left axe, carrying the first swing's momentum
 	jab2.grounded = true
 	jab2.land_cancels = false
 	jab2.chain_to = "jab3"
 	jab2.chain_from = 10
-	jab2.hit(HitboxData.make(5, 6, Vector2(38, -50), Vector2(46, 26), 4, 65, 30, 25))
+	jab2.velocity_keys = {2: Vector2(120, 0)}
+	jab2.hit(HitboxData.make(5, 6, Vector2(40, -44), Vector2(50, 40), 4, 65, 30, 25).with_sfx("axe_light"))
 	m[jab2.id] = jab2
 
-	var jab3 := MoveData.make("jab3", 40)  # both axes overhead, real endlag
+	# Overhead finisher. Recovery is 6 frames longer than the old jab3 (40 → 46): the
+	# brief asks for a noticeably committed finisher (reported as a frame-data change).
+	var jab3 := MoveData.make("jab3", 46)
 	jab3.grounded = true
 	jab3.land_cancels = false
 	jab3.velocity_keys = {6: Vector2(160, 0)}
-	jab3.hit(HitboxData.make(8, 10, Vector2(50, -38), Vector2(62, 54), 8, 40, 60, 85).with_hitlag(1.15))
+	jab3.swing_sfx = "swing_heavy"
+	jab3.hit(HitboxData.make(8, 10, Vector2(48, -46), Vector2(62, 84), 8, 40, 60, 85)
+		.with_hitlag(1.15).with_sfx("axe_heavy"))
 	m[jab3.id] = jab3
 
 	# --- Tilts ----------------------------------------------------------------------
@@ -56,7 +63,9 @@ static func build(b: Berserker) -> Dictionary:
 	fsmash.turn_on_start = true
 	fsmash.charge_frame = 12
 	fsmash.velocity_keys = {18: Vector2(260, 0)}
-	fsmash.hit(HitboxData.make(20, 23, Vector2(64, -48), Vector2(98, 46), 20, 361, 35, 92).with_hitlag(1.25))
+	fsmash.swing_sfx = "swing_heavy"
+	fsmash.hit(HitboxData.make(20, 23, Vector2(64, -48), Vector2(98, 46), 20, 361, 35, 92)
+		.with_hitlag(1.25).with_sfx("axe_heavy"))
 	m[fsmash.id] = fsmash
 
 	var dsmash := MoveData.make("dsmash", 58)  # stomp + both axes slam either side

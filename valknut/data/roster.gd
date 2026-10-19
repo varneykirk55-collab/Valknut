@@ -6,19 +6,19 @@ const LEGENDS := [
 	{
 		"id": "valkyrie", "name": "Valkyrie", "available": true,
 		"scene": "res://valknut/characters/valkyrie/valkyrie.tscn",
-		"class": "Aerial · Midweight",
+		"class": "Vanguard · Balanced",
 		"blurb": "Spear and shield. Strong air game, hover recovery, Spear Dive.",
 	},
 	{
 		"id": "berserker", "name": "Berserker", "available": true,
 		"scene": "res://valknut/characters/berserker/berserker.tscn",
-		"class": "Heavy · Grounded",
+		"class": "Heavy · Bruiser",
 		"blurb": "Twin hand axes. Slow, hits like a landslide, poor recovery. Rage Spin.",
 	},
 	{
 		"id": "dwarf", "name": "Dwarf", "available": false,
 		"scene": "res://valknut/characters/dwarf/dwarf.tscn",
-		"class": "Tank", "blurb": "Warhammer and tower shield. Grounded fortress.",
+		"class": "Tank · Defender", "blurb": "Warhammer and tower shield. Durable, resists launches, slow.",
 	},
 	{
 		"id": "trickster", "name": "Trickster", "available": false,

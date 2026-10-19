@@ -11,28 +11,35 @@ extends RefCounted
 static func build(v: Valkyrie) -> Dictionary:
 	var m := {}
 
-	# --- Jab string ---------------------------------------------------------------
-	var jab1 := MoveData.make("jab1", 18)
+	# --- Neutral combo: Spear Slash → Shield Bash → Spear Finisher -----------------------
+	# One button, three hits. Damage/angles/knockback are the original jab values; the
+	# hitboxes are shaped for what each hit now is (a sweep covers height, not reach).
+	var jab1 := MoveData.make("jab1", 18)  # Spear Slash: short horizontal sweep
 	jab1.grounded = true
 	jab1.land_cancels = false
 	jab1.chain_to = "jab2"
 	jab1.chain_from = 7
-	jab1.hit(HitboxData.make(3, 4, Vector2(44, -58), Vector2(46, 18), 3, 70, 25, 20))
+	jab1.hit(HitboxData.make(3, 4, Vector2(40, -54), Vector2(52, 38), 3, 70, 25, 20).with_sfx("spear_slash"))
 	m[jab1.id] = jab1
 
-	var jab2 := MoveData.make("jab2", 20)  # shield bash
+	var jab2 := MoveData.make("jab2", 20)  # Shield Bash: step in, shield-first
 	jab2.grounded = true
 	jab2.land_cancels = false
 	jab2.chain_to = "jab3"
 	jab2.chain_from = 8
-	jab2.hit(HitboxData.make(4, 5, Vector2(30, -50), Vector2(36, 38), 3, 60, 25, 20))
+	jab2.velocity_keys = {2: Vector2(240, 0)}  # forward weight transfer
+	jab2.swing_sfx = ""
+	jab2.hit(HitboxData.make(4, 5, Vector2(30, -50), Vector2(36, 38), 3, 60, 25, 20)
+		.with_hitlag(1.3).with_sfx("shield_bash"))
 	m[jab2.id] = jab2
 
-	var jab3 := MoveData.make("jab3", 34)  # two-handed thrust finisher
+	var jab3 := MoveData.make("jab3", 34)  # Spear Finisher: two-handed sweep
 	jab3.grounded = true
 	jab3.land_cancels = false
 	jab3.velocity_keys = {5: Vector2(200, 0)}
-	jab3.hit(HitboxData.make(7, 9, Vector2(64, -54), Vector2(64, 20), 6, 40, 50, 70))
+	jab3.swing_sfx = "swing_heavy"
+	jab3.hit(HitboxData.make(7, 9, Vector2(56, -50), Vector2(76, 44), 6, 40, 50, 70)
+		.with_hitlag(1.15).with_sfx("spear_finisher"))
 	m[jab3.id] = jab3
 
 	# --- Tilts --------------------------------------------------------------------
@@ -57,6 +64,7 @@ static func build(v: Valkyrie) -> Dictionary:
 	fsmash.turn_on_start = true
 	fsmash.charge_frame = 9
 	fsmash.velocity_keys = {10: Vector2(420, 0)}
+	fsmash.swing_sfx = "swing_heavy"
 	fsmash.hit(HitboxData.make(14, 17, Vector2(88, -54), Vector2(30, 22), 16, 361, 35, 100))
 	fsmash.hit(HitboxData.make(14, 17, Vector2(52, -54), Vector2(44, 22), 14, 361, 32, 95))
 	m[fsmash.id] = fsmash

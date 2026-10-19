@@ -257,7 +257,10 @@ func _restart() -> void:
 func _on_hit_landed(attacker: Fighter, target: Fighter, data: HitboxData, point: Vector2) -> void:
 	var dmg := data.damage * attacker.charge_mult
 	effects.hit_spark(point, dmg, attacker.tag_color)
-	Sfx.play_hit(dmg)
+	if data.sfx != "":
+		Sfx.play(data.sfx, 0.05)
+	else:
+		Sfx.play_hit(dmg)
 	if dmg >= 9.0:
 		camera.add_shake(dmg * 0.7)
 	hud.on_hit(attacker, target, dmg)

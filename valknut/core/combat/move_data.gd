@@ -28,9 +28,13 @@ var grounded := false
 var turn_on_start := false
 
 ## --- Flow -------------------------------------------------------------------
-## Pressing attack from `chain_from` onward cancels into `chain_to` (jab strings).
+## Combo strings: an attack press made any time from `chain_queue_from` to `chain_until`
+## is remembered (one press, never more) and continues into `chain_to` once the move
+## reaches `chain_from`. No press → the move plays out and returns to neutral.
 var chain_to := ""
 var chain_from := 9999
+var chain_queue_from := 1
+var chain_until := -1      ## -1 = until the move ends
 ## First frame the fighter may act again (IASA). Defaults to total_frames.
 var interrupt_from := -1
 ## Smash charge: the move pauses on this frame while the button is held.
@@ -52,6 +56,8 @@ var velocity_keys := {}
 var on_frame: Callable
 ## Called when a hitbox connects: on_hit.call(fighter, target).
 var on_hit: Callable
+## Whoosh played when the move starts ("" = silent).
+var swing_sfx := "swing"
 
 
 static func make(p_id: String, p_total: int, p_anim := "") -> MoveData:
@@ -65,6 +71,10 @@ static func make(p_id: String, p_total: int, p_anim := "") -> MoveData:
 func hit(h: HitboxData) -> MoveData:
 	hitboxes.append(h)
 	return self
+
+
+func chain_window_end() -> int:
+	return total_frames if chain_until < 0 else chain_until
 
 
 func iasa() -> int:

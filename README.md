@@ -30,7 +30,10 @@ Open the folder in Godot 4.3 or newer (4.7.2 works), press **F5** (main scene: `
 One pad connected → it goes to P2 (keyboard vs controller); two pads → one each. Change it in
 the Versus setup screen. Bindings live in `valknut/autoload/input_setup.gd`.
 
-- **Attacks:** Attack + direction = neutral / side / down. **Smash** = flick the direction *with* Attack,
+- **Neutral combo:** press Attack up to three times (no direction): Valkyrie Spear Slash →
+  Shield Bash → Spear Finisher; Berserker Right Axe → Left Axe → Double-Axe Overhead. Stop
+  after any hit. Presses made early are remembered. See `docs/combat_animation.md`.
+- **Attacks:** Attack + direction = side / down tilts. **Smash** = flick the direction *with* Attack,
   or use Strong. Hold to charge (up to 1 s, ×1.4 damage). Side air turns you to face the direction.
 - **Specials (Valkyrie):** neutral/up = *Wings of Valhalla* (rise, hold Special to hover, ends helpless) ·
   side = *Shield Charge* · down = *Spear Dive* (signature; spikes, bounces off on hit).
@@ -81,7 +84,8 @@ valknut/
   match/                     match flow (rounds, timer, sudden death, training), camera, HUD, effects, pause
   ui/                        title, versus setup, controls screens, MenuList widget
   tests/                     headless gameplay tests + screenshot tool
-  art/source/                source sprite sheets            tools/  frame cutter (cut_frames.py)
+  art/source/                source sprite sheets            tools/  frame/pose pipeline
+docs/                        combat_animation.md (status, audit, approach), art_requests/, previews/
 ```
 
 ### Adding a legend
@@ -95,6 +99,7 @@ valknut/
 godot --headless --path . --fixed-fps 60 res://valknut/tests/sim_test.tscn         # mechanics (37 checks)
 godot --headless --path . --fixed-fps 60 res://valknut/tests/round_flow_test.tscn  # rounds, sudden death, menus
 godot --headless --path . --fixed-fps 60 res://valknut/tests/berserker_test.tscn   # Berserker vs Valkyrie comparisons
+godot --headless --path . --fixed-fps 60 res://valknut/tests/combo_test.tscn       # 3-hit combos, heavies, classes
 godot --path . --fixed-fps 60 res://valknut/tests/screenshot.tscn -- /tmp/shots --poses --legend=berserker  # hitbox pose sheet
 ```
 They drive real input actions through a live match. Both exit non-zero on failure.

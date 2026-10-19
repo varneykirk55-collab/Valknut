@@ -7,6 +7,8 @@ var move: MoveData
 var charging := false
 var charge := 0
 var airborne := false
+## A combo press waiting for the chain window (see MoveData.chain_*).
+var chain_queued := false
 
 
 func enter(_data: Dictionary) -> void:
@@ -16,12 +18,13 @@ func enter(_data: Dictionary) -> void:
 	f.reset_hit_registry()
 	charging = false
 	charge = 0
+	chain_queued = false
 	airborne = not f.is_on_floor()
 	if move.grounded:
 		f.hurtbox.reset_size()
 	f.play_anim(move.anim, true)
-	if not move.hitboxes.is_empty():
-		Sfx.play("swing", 0.12, -8.0)
+	if not move.hitboxes.is_empty() and move.swing_sfx != "":
+		Sfx.play(move.swing_sfx, 0.12, -8.0)
 
 
 func exit() -> void:
@@ -68,10 +71,16 @@ func tick() -> void:
 	if move.can_grab_ledge_from >= 0 and mf >= move.can_grab_ledge_from and f.try_ledge_grab():
 		return
 
-	# Jab strings: pressing attack again during the chain window continues the combo.
-	if move.chain_to != "" and mf >= move.chain_from and f.input.consume("attack"):
-		f.start_move(move.chain_to)
-		return
+	# Combo strings: remember one attack press made during the move, continue the
+	# string when the chain window opens. Getting hit leaves this state, which drops
+	# the queued press, so an interrupted combo always restarts from hit 1.
+	if move.chain_to != "":
+		if not chain_queued and mf >= move.chain_queue_from and mf <= move.chain_window_end() \
+				and f.input.consume("attack"):
+			chain_queued = true
+		if chain_queued and mf >= move.chain_from:
+			f.start_move(move.chain_to)
+			return
 
 	if mf >= move.iasa() and mf < move.total_frames:
 		if (f.try_ground_actions() if f.is_on_floor() else f.try_air_actions()):

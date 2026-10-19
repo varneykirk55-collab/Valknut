@@ -32,7 +32,7 @@ texture_filter = 2
 position = Vector2(0, 42)
 scale = Vector2(0.9170, 0.9170)
 sprite_frames = ExtResource("3_frames")
-animation = &"frames"
+animation = &"idle"
 offset = Vector2(0, -60)
 
 [node name="SlashFX" type="Node2D" parent="Visual/Rig"]

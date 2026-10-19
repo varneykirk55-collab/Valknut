@@ -1,47 +1,63 @@
 [gd_resource type="SpriteFrames" load_steps=12 format=3]
 
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_idle.png" id="1_idle"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_01.png" id="2_walk_01"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_02.png" id="3_walk_02"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_03.png" id="4_walk_03"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_04.png" id="5_walk_04"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_jump.png" id="6_jump"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_fall.png" id="7_fall"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_hurt.png" id="8_hurt"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_attack_startup.png" id="9_attack_startup"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_attack_active.png" id="10_attack_active"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_attack_recovery.png" id="11_attack_recovery"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_attack_active.png" id="1_attack_active"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_attack_recovery.png" id="2_attack_recovery"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_attack_startup.png" id="3_attack_startup"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_fall.png" id="4_fall"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_hurt.png" id="5_hurt"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_idle.png" id="6_idle"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_jump.png" id="7_jump"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_01.png" id="8_walk_01"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_02.png" id="9_walk_02"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_03.png" id="10_walk_03"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_04.png" id="11_walk_04"]
 
 [resource]
+metadata/placeholders = PackedStringArray("right_anticipation", "right_smear", "right_contact", "right_follow", "left_anticipation", "left_smear", "left_contact", "left_follow", "overhead_windup", "overhead_smear", "overhead_contact", "overhead_impact", "heavy_windup", "heavy_charge", "heavy_smear", "heavy_contact", "heavy_recovery")
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("1_idle")
+"texture": ExtResource("6_idle")
 }],
-"loop": true,
+"loop": false,
 "name": &"idle",
 "speed": 1.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("2_walk_01")
-}, {
-"duration": 1.0,
-"texture": ExtResource("3_walk_02")
-}, {
-"duration": 1.0,
-"texture": ExtResource("4_walk_03")
-}, {
-"duration": 1.0,
-"texture": ExtResource("5_walk_04")
+"texture": ExtResource("8_walk_01")
 }],
-"loop": true,
-"name": &"walk",
-"speed": 8.0
+"loop": false,
+"name": &"walk_01",
+"speed": 1.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("6_jump")
+"texture": ExtResource("9_walk_02")
+}],
+"loop": false,
+"name": &"walk_02",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_walk_03")
+}],
+"loop": false,
+"name": &"walk_03",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("11_walk_04")
+}],
+"loop": false,
+"name": &"walk_04",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_jump")
 }],
 "loop": false,
 "name": &"jump",
@@ -49,7 +65,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("7_fall")
+"texture": ExtResource("4_fall")
 }],
 "loop": false,
 "name": &"fall",
@@ -57,7 +73,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("8_hurt")
+"texture": ExtResource("5_hurt")
 }],
 "loop": false,
 "name": &"hurt",
@@ -65,7 +81,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("9_attack_startup")
+"texture": ExtResource("3_attack_startup")
 }],
 "loop": false,
 "name": &"attack_startup",
@@ -73,7 +89,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("10_attack_active")
+"texture": ExtResource("1_attack_active")
 }],
 "loop": false,
 "name": &"attack_active",
@@ -81,7 +97,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("11_attack_recovery")
+"texture": ExtResource("2_attack_recovery")
 }],
 "loop": false,
 "name": &"attack_recovery",
@@ -89,53 +105,168 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("9_attack_startup")
+"texture": ExtResource("3_attack_startup")
+}],
+"loop": false,
+"name": &"right_anticipation",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_attack_active")
+}],
+"loop": false,
+"name": &"right_smear",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_attack_active")
+}],
+"loop": false,
+"name": &"right_contact",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_attack_recovery")
+}],
+"loop": false,
+"name": &"right_follow",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_attack_recovery")
+}],
+"loop": false,
+"name": &"left_anticipation",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_attack_active")
+}],
+"loop": false,
+"name": &"left_smear",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_attack_active")
+}],
+"loop": false,
+"name": &"left_contact",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_attack_recovery")
+}],
+"loop": false,
+"name": &"left_follow",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_jump")
+}],
+"loop": false,
+"name": &"overhead_windup",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_attack_active")
+}],
+"loop": false,
+"name": &"overhead_smear",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_attack_active")
+}],
+"loop": false,
+"name": &"overhead_contact",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_attack_recovery")
+}],
+"loop": false,
+"name": &"overhead_impact",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_attack_startup")
+}],
+"loop": false,
+"name": &"heavy_windup",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_attack_startup")
+}],
+"loop": false,
+"name": &"heavy_charge",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_attack_active")
+}],
+"loop": false,
+"name": &"heavy_smear",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_attack_active")
+}],
+"loop": false,
+"name": &"heavy_contact",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_attack_recovery")
+}],
+"loop": false,
+"name": &"heavy_recovery",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_walk_01")
 }, {
 "duration": 1.0,
-"texture": ExtResource("10_attack_active")
+"texture": ExtResource("9_walk_02")
 }, {
 "duration": 1.0,
-"texture": ExtResource("11_attack_recovery")
+"texture": ExtResource("10_walk_03")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_walk_04")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_attack_startup")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_attack_active")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_attack_recovery")
 }],
 "loop": false,
 "name": &"attack",
 "speed": 10.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("1_idle")
-}, {
-"duration": 1.0,
-"texture": ExtResource("2_walk_01")
-}, {
-"duration": 1.0,
-"texture": ExtResource("3_walk_02")
-}, {
-"duration": 1.0,
-"texture": ExtResource("4_walk_03")
-}, {
-"duration": 1.0,
-"texture": ExtResource("5_walk_04")
-}, {
-"duration": 1.0,
-"texture": ExtResource("6_jump")
-}, {
-"duration": 1.0,
-"texture": ExtResource("7_fall")
-}, {
-"duration": 1.0,
-"texture": ExtResource("8_hurt")
-}, {
-"duration": 1.0,
-"texture": ExtResource("9_attack_startup")
-}, {
-"duration": 1.0,
-"texture": ExtResource("10_attack_active")
-}, {
-"duration": 1.0,
-"texture": ExtResource("11_attack_recovery")
-}],
-"loop": false,
-"name": &"frames",
-"speed": 1.0
 }]

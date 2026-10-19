@@ -28,6 +28,8 @@ var link := false
 ## Hitboxes of a move share one hit per target per group. Put a multi-hit's finisher
 ## in its own group so the earlier hits don't block it.
 var group := 0
+## Impact sound for this hitbox ("" = generic hit sound scaled by damage).
+var sfx := ""
 
 
 static func make(p_start: int, p_end: int, p_offset: Vector2, p_size: Vector2,
@@ -61,6 +63,11 @@ func with_hitlag(mult: float) -> HitboxData:
 
 func with_rehit(frames: int) -> HitboxData:
 	rehit = frames
+	return self
+
+
+func with_sfx(sound: String) -> HitboxData:
+	sfx = sound
 	return self
 
 

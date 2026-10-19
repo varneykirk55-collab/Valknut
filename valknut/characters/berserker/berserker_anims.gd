@@ -6,24 +6,25 @@ extends RefCounted
 ## frames with the active frame on the move's first hitbox frame; motion (hops, lunges,
 ## spins, squash) and SlashFX effects are layered on top.
 
-const FRAME := "Rig/Body/Sprite:frame"
+## Pose track: names an animation in <legend>_frames.tres (one per pose / pose slot).
+const FRAME := "Rig/Body/Sprite:animation"
 const BODY_POS := "Rig/Body:position"
 const BODY_ROT := "Rig/Body:rotation"
 const RIG_SCALE := "Rig:scale"
 const RIG_TINT := "Rig:modulate"
 
-# Frame indices in the "frames" strip of berserker_frames.tres.
-const IDLE := 0
-const WALK_1 := 1
-const WALK_2 := 2
-const WALK_3 := 3
-const WALK_4 := 4
-const JUMP := 5
-const FALL := 6        ## the sheet has one jump/fall drawing; both names point to it
-const HURT := 7
-const STARTUP := 8
-const ACTIVE := 9      ## wide axe swing, slash arc and motion lines drawn in
-const RECOVERY := 10
+# Base poses (cut from the source sheet). Combo/heavy poses are named slots (pose_slots.py).
+const IDLE := &"idle"
+const WALK_1 := &"walk_01"
+const WALK_2 := &"walk_02"
+const WALK_3 := &"walk_03"
+const WALK_4 := &"walk_04"
+const JUMP := &"jump"
+const FALL := &"fall"        ## the sheet has one jump/fall drawing; both names point to it
+const HURT := &"hurt"
+const STARTUP := &"attack_startup"
+const ACTIVE := &"attack_active"      ## wide axe swing, slash arc and motion lines drawn in
+const RECOVERY := &"attack_recovery"
 
 const BODY := Vector2(0, -46)
 const GHOST := Color(1, 1, 1, 0.45)
@@ -40,7 +41,7 @@ const DEFAULT_POSE := {
 
 
 ## Startup → active → recovery → `end` frame (idle on the ground, fall in the air).
-static func strike(startup: int, active: int, recovery: int, back: int, end := IDLE, first := STARTUP) -> Array:
+static func strike(startup: int, active: int, recovery: int, back: int, end: StringName = IDLE, first: StringName = STARTUP) -> Array:
 	var keys := [[startup, STARTUP], [active, ACTIVE], [recovery, RECOVERY], [back, end]]
 	if startup > 0:
 		keys.push_front([0, first])
@@ -72,22 +73,28 @@ static func build() -> AnimationLibrary:
 	b.add("fall", 1, false, {FRAME: FALL, BODY_ROT: 0.08})
 	b.add("land", 8, false, {FRAME: [[0, STARTUP], [6, IDLE]], RIG_SCALE: [[0, Vector2(1.2, 0.78)], [8, Vector2.ONE]]})
 
-	# --- Jab string ------------------------------------------------------------------------
+	# --- Neutral combo: Right Axe → Left Axe → Double-Axe Overhead -------------------------
+	# Anticipation → smear → contact (first hitbox frame) → follow-through per hit; the
+	# right-axe follow-through already cocks the left axe, the left-axe follow-through
+	# starts raising both, so the string never passes through idle. Poses are named slots
+	# (tools/pose_slots.py); undrawn ones show placeholders (F1 debug view). Motion is
+	# only weight transfer and the finisher's hop — the swings come from the drawings.
 	b.add("jab1", 20, false, {
-		FRAME: strike(0, 4, 10, 16),
-		BODY_POS: [[0, BODY + Vector2(-3, 1)], [4, BODY + Vector2(5, 0)], [12, BODY]],
+		FRAME: [[0, &"right_anticipation"], [3, &"right_smear"], [4, &"right_contact"], [8, &"right_follow"],
+			[15, RECOVERY], [18, IDLE]],
+		BODY_POS: [[0, BODY + Vector2(-3, 1)], [4, BODY + Vector2(5, 0)], [14, BODY]],
 	})
-	b.add("jab2", 22, false, {  # second swing, stepping in
-		FRAME: strike(0, 5, 12, 18),
-		BODY_POS: [[0, BODY], [3, BODY + Vector2(-2, 1)], [5, BODY + Vector2(10, 0)], [14, BODY + Vector2(10, 0)], [22, BODY]],
+	b.add("jab2", 22, false, {
+		FRAME: [[0, &"left_anticipation"], [4, &"left_smear"], [5, &"left_contact"], [9, &"left_follow"],
+			[17, RECOVERY], [20, IDLE]],
+		BODY_POS: [[0, BODY], [5, BODY + Vector2(6, 0)], [16, BODY + Vector2(4, 0)], [22, BODY]],
 	})
-	b.add("jab3", 40, false, {  # hop, then the swing comes down as an overhead chop
-		FRAME: [[0, STARTUP], [3, JUMP], [8, ACTIVE], [20, RECOVERY], [32, IDLE]],
-		BODY_POS: [[0, BODY], [3, BODY + Vector2(0, -12)], [6, BODY + Vector2(4, -18)], [8, BODY + Vector2(8, 0)],
-			[26, BODY + Vector2(8, 0)], [40, BODY]],
-		BODY_ROT: [[0, 0.0], [6, -0.2], [8, 0.35], [20, 0.35], [30, 0.0]],
-		RIG_SCALE: [[0, Vector2(1.08, 0.9)], [3, Vector2(0.94, 1.08)], [8, Vector2(1.12, 0.88)], [16, Vector2.ONE]],
-	})
+	b.add("jab3", 46, false, SlashFX.with({
+		FRAME: [[0, &"overhead_windup"], [7, &"overhead_smear"], [8, &"overhead_contact"], [12, &"overhead_impact"],
+			[34, RECOVERY], [42, IDLE]],
+		BODY_POS: [[0, BODY], [4, BODY + Vector2(0, -8)], [7, BODY + Vector2(2, -4)], [8, BODY + Vector2(6, 2)],
+			[30, BODY + Vector2(6, 2)], [46, BODY]],
+	}, SlashFX.ring(Vector2(48, -4), 40, 10, RED, 8, 16, 0.5, 0.25)))  # ground impact shockwave
 
 	# --- Tilts / smashes -----------------------------------------------------------------
 	b.add("ftilt", 38, false, {
@@ -100,11 +107,11 @@ static func build() -> AnimationLibrary:
 		RIG_SCALE: [[0, Vector2(1.06, 0.9)], [8, Vector2(1.06, 0.84)], [18, Vector2.ONE]],
 	})
 	b.add("fsmash", 64, false, {
-		# Deep crouched wind-up (held while charging), then a full-body sweep.
-		FRAME: strike(5, 20, 36, 54, IDLE, IDLE),
-		BODY_ROT: [[0, 0.0], [12, -0.12], [20, 0.04], [40, 0.0]],
+		# Heavy axe: its own deep wind-up, a held charge pose, a full-body sweep and an
+		# overcommitted recovery. Charge holds on frame 12 (heavy_charge).
+		FRAME: [[0, &"heavy_windup"], [8, &"heavy_charge"], [18, &"heavy_smear"], [20, &"heavy_contact"],
+			[30, &"heavy_recovery"], [54, IDLE]],
 		BODY_POS: [[0, BODY], [12, BODY + Vector2(-12, 4)], [20, BODY + Vector2(12, 0)], [40, BODY + Vector2(12, 0)], [64, BODY]],
-		RIG_SCALE: [[0, Vector2.ONE], [12, Vector2(1.08, 0.9)], [20, Vector2.ONE]],
 	})
 	b.add("dsmash", 58, false, SlashFX.with({  # leap, then slam into the ground
 		FRAME: [[0, STARTUP], [8, JUMP], [16, ACTIVE], [32, RECOVERY], [46, IDLE]],

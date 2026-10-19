@@ -31,6 +31,10 @@ func _ready() -> void:
 	var p1: Fighter = m.fighters[0]
 	var p2: Fighter = m.fighters[1]
 	await frames(10)
+	if "--combo-film" in args:
+		await _combo_film(m, p1, p2)
+		get_tree().quit()
+		return
 	if "--film" in args:
 		await _film(m, p1, p2)
 		get_tree().quit()
@@ -133,6 +137,62 @@ func _film(m: Node, p1: Fighter, p2: Fighter) -> void:
 			img.get_region(r).save_png(out_dir.path_join("film_%s_%02d.png" % [id, f]))
 			m.set_physics_process(true)
 		await frames(40)
+
+
+## Plays the full neutral combo, then the heavy, against a dummy and captures every
+## 2 frames around P1. Writes combo_NNN.png plus combo_labels.txt
+## (index, move, move frame, pose, PLACEHOLDER flag) for the filmstrip tool.
+func _combo_film(m: Node, p1: Fighter, p2: Fighter) -> void:
+	var labels: Array[String] = []
+	var n := 0
+	for take in ["combo", "heavy"]:
+		p1.reset_for_round(Vector2(-160, -2), 1)
+		p2.reset_for_round(Vector2(-160 + 52, -2), -1)
+		await frames(20)
+		var presses := 0
+		var hold := 0
+		var t := 0
+		while t < 110:
+			if take == "combo":
+				# Press for the next hit as soon as the current one has connected; hold
+				# each press a few ticks (captures pause the match between ticks).
+				var mv: MoveData = p1.current_move
+				var want := presses == 0 or (mv != null and presses < 3 and mv.id == "jab%d" % presses \
+					and p1.move_frame >= mv.hitboxes[0].end)
+				if hold > 0:
+					hold -= 1
+					if hold == 0:
+						Input.action_release("p1_attack")
+				elif want:
+					Input.action_press("p1_attack")
+					presses += 1
+					hold = 3
+			elif t == 0:
+				Input.action_press("p1_strong")
+			elif t == 3:
+				Input.action_release("p1_strong")
+			if t % 2 == 0:
+				m.set_physics_process(false)
+				await RenderingServer.frame_post_draw
+				var img := get_viewport().get_texture().get_image()
+				var at := p1.get_global_transform_with_canvas().origin
+				var r := Rect2i(int(at.x) - 110, int(at.y) - 150, 260, 175).intersection(Rect2i(Vector2i.ZERO, img.get_size()))
+				img.get_region(r).save_png(out_dir.path_join("combo_%03d.png" % n))
+				var mv2: MoveData = p1.current_move
+				var pose := p1.current_pose()
+				labels.append("%d|%s|%s|%d|%s|%s" % [n, take, mv2.id if mv2 else String(p1.sm.current_name),
+					p1.move_frame if mv2 else 0, pose, "PLACEHOLDER" if pose in p1.placeholder_poses else ""])
+				n += 1
+				m.set_physics_process(true)
+			await frames(1)
+			t += 1
+			if take == "combo" and presses >= 3 and p1.sm.current_name == &"idle" and t > 20:
+				break
+			if take == "heavy" and t > 10 and p1.sm.current_name == &"idle":
+				break
+		Input.action_release("p1_attack")
+	var f := FileAccess.open(out_dir.path_join("combo_labels.txt"), FileAccess.WRITE)
+	f.store_string("\n".join(labels))
 
 
 func shot(name: String) -> void:
