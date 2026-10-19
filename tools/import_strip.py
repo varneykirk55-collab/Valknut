@@ -6,7 +6,7 @@
 Poses are found by empty columns between them. The scale is set so the FIRST pose is
 --height px tall and the same factor is used for every pose (normalising each pose to
 the same height would hide or invent breathing). Each pose is then placed so the
-midpoint between its feet (outer edges of the lowest opaque row's two runs) sits on
+midpoint between its feet (outer edges of the lowest row showing both boots) sits on
 --feet x, and its lowest pixel on --feet y. Writes <out_prefix>_01.png, _02.png, ...
 """
 import sys
@@ -31,9 +31,15 @@ def segments(mask, length, gap=8):
 
 
 def feet_mid(im):
+    """Midpoint between the outer edges of both boots, from the lowest row (within the
+    bottom 15%) that shows two separate runs; one foot may sit lower than the other."""
     px = im.load()
-    y = im.getbbox()[3] - 4
-    runs = segments(lambda x: px[x, y][3] > 128, im.width, 2)
+    bottom = im.getbbox()[3] - 4
+    runs = []
+    for y in range(bottom, bottom - im.height * 15 // 100, -1):
+        runs = segments(lambda x: px[x, y][3] > 128, im.width, 2)
+        if len(runs) >= 2:
+            break
     return (runs[0][0] + runs[-1][1]) / 2.0
 
 

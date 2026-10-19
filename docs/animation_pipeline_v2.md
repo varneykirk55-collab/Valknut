@@ -187,3 +187,22 @@ idle, which already reverses. The timing is unchanged.
   breathing still comes from the existing procedural bob.
 - Acceptable as a working idle. A final polish pass would trace idle_02 and idle_03
   over idle_01 so only the chest, shoulders and mantle move.
+
+## 7. Light attack: progress (1 of 5 poses)
+
+- **`light_anticipation` is drawn and in the game.**
+  - Source: `valknut/art/source/berserker_v2_light/berserker_light_anticipation_source.png`
+    (real alpha, uncropped).
+  - Imported with `tools/import_strip.py --height=233`, at scale 0.2407. The scale was
+    matched to the idle by belt-buckle width (20 canvas px in both), not by total height,
+    because of the raised axe.
+  - Feet midpoint at x = 260, floor at y = 248. The stance is wider than the idle's: the
+    rear foot is 20 px further back and the front foot 30 px further forward.
+  - The front boot's sole sits about 7 px above the floor line. That's drawn into the
+    art.
+- **Idle → anticipation** reads cleanly: same scale and design, grounded, with a clear
+  front-axe wind-up.
+- **Still missing:** light_smear, light_contact, light_recovery and light_settle. These
+  frames (frame 3 onward) currently drop to the side-view placeholder, which is a
+  visible design and facing snap. The light attack isn't complete until they're drawn.
+- Previews are in `docs/previews/berserker_v2/light/`.
