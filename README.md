@@ -1,6 +1,6 @@
 # Valknut
 
-A Norse-themed 2D platform fighter for **Godot 4.3+** (GL Compatibility renderer). Smash-style
+A Norse-themed 2D platform fighter for **Godot 4.3+** (tested on 4.3 and 4.7.2; GL Compatibility renderer). Smash-style
 percent knockback, DI, teching, ledges, blast zones, best-of-3 rounds with sudden death.
 
 **Current build (first playable):** Valkyrie fully playable · Midgard Arena · local 1v1 (shared
@@ -8,7 +8,7 @@ keyboard, keyboard + pad, or two pads) · Training mode with a dummy. Art is cod
 placeholder shapes, animated with `AnimationPlayer`.
 
 ## Run it
-Open the folder in Godot 4.3+, press **F5** (main scene: `res://valknut/main.tscn`).
+Open the folder in Godot 4.3 or newer (4.7.2 works), press **F5** (main scene: `res://valknut/main.tscn`).
 
 ## Controls
 |            | P1 keyboard | P2 keyboard | Gamepad |
