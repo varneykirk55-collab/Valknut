@@ -15,8 +15,7 @@ Style: match the existing frames exactly — same pixel density, outline weight,
 | `right_contact` | 256×128 | frames 4–7 | Right axe at the bottom-front of the diagonal (around the opponent's waist), arm extended, body twisted toward the target, weight on the front foot. |
 | `right_follow` | 128×128 | frames 8–11 | Right axe carried through low and across the body; the LEFT axe is already cocking up behind the head (the momentum hand-off into hit 2). Not an idle-like pose. |
 | `right_return_01` (attack-local transition) | 128×128 | frames 12–14 | Lower the rear axe toward the shoulder while unwinding from follow-through. |
-| `right_return_02` (attack-local transition) | 128×128 | frames 15–16 | Both axes low, torso settling into the original ready stance. |
-| `attack_recovery` (existing) | — | frame 17 | Return to shared recovery (unchanged artwork). |
+| `right_return_02` (attack-local transition) | 128×128 | frames 15–17 | Both axes low, torso settling into the original ready stance; held through frame 17 to avoid the taller shared recovery drawing's one-frame pop. |
 | `idle` (existing) | — | frames 18–19 | Return to stance (already drawn). |
 
 ## Combo hit 2 — Left Axe Swing (22 frames at 60 fps)
