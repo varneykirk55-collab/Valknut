@@ -146,8 +146,9 @@ func _combo_film(m: Node, p1: Fighter, p2: Fighter) -> void:
 	var labels: Array[String] = []
 	var n := 0
 	var first_only := "--first-hit" in OS.get_cmdline_user_args()
+	var repeat_first := first_only and "--repeat-first" in OS.get_cmdline_user_args()
 	var sample_step := 1 if first_only else 2
-	var max_presses := 1 if first_only else 3
+	var max_presses := 3 if repeat_first else (1 if first_only else 3)
 	for take in (["combo"] if first_only else ["combo", "heavy"]):
 		p1.reset_for_round(Vector2(-160, -2), 1)
 		p2.reset_for_round(Vector2(-160 + 52, -2), -1)
@@ -155,13 +156,16 @@ func _combo_film(m: Node, p1: Fighter, p2: Fighter) -> void:
 		var presses := 0
 		var hold := 0
 		var t := 0
-		while t < 110:
+		var last_press := -40
+		while t < (160 if repeat_first else 110):
 			if take == "combo":
 				# Press for the next hit as soon as the current one has connected; hold
 				# each press a few ticks (captures pause the match between ticks).
 				var mv: MoveData = p1.current_move
 				var want := presses == 0 or (mv != null and presses < max_presses and mv.id == "jab%d" % presses \
 					and p1.move_frame >= mv.hitboxes[0].end)
+				if repeat_first:
+					want = presses < max_presses and p1.sm.current_name == &"idle" and t - last_press >= 40
 				if hold > 0:
 					hold -= 1
 					if hold == 0:
@@ -169,6 +173,7 @@ func _combo_film(m: Node, p1: Fighter, p2: Fighter) -> void:
 				elif want:
 					Input.action_press("p1_attack")
 					presses += 1
+					last_press = t
 					hold = 3
 			elif t == 0:
 				Input.action_press("p1_strong")

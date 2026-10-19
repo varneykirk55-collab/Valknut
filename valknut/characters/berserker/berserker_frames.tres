@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=16 format=3]
+[gd_resource type="SpriteFrames" load_steps=18 format=3]
 
 [ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_attack_active.png" id="1_attack_active"]
 [ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_attack_recovery.png" id="2_attack_recovery"]
@@ -10,11 +10,13 @@
 [ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_right_anticipation.png" id="8_right_anticipation"]
 [ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_right_contact.png" id="9_right_contact"]
 [ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_right_follow.png" id="10_right_follow"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_right_smear.png" id="11_right_smear"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_01.png" id="12_walk_01"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_02.png" id="13_walk_02"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_03.png" id="14_walk_03"]
-[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_04.png" id="15_walk_04"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_right_return_01.png" id="11_right_return_01"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_right_return_02.png" id="12_right_return_02"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_right_smear.png" id="13_right_smear"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_01.png" id="14_walk_01"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_02.png" id="15_walk_02"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_03.png" id="16_walk_03"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/frames/berserker_walk_04.png" id="17_walk_04"]
 
 [resource]
 metadata/placeholders = PackedStringArray("left_anticipation", "left_smear", "left_contact", "left_follow", "overhead_windup", "overhead_smear", "overhead_contact", "overhead_impact", "heavy_windup", "heavy_charge", "heavy_smear", "heavy_contact", "heavy_recovery")
@@ -29,7 +31,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("12_walk_01")
+"texture": ExtResource("14_walk_01")
 }],
 "loop": false,
 "name": &"walk_01",
@@ -37,7 +39,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("13_walk_02")
+"texture": ExtResource("15_walk_02")
 }],
 "loop": false,
 "name": &"walk_02",
@@ -45,7 +47,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("14_walk_03")
+"texture": ExtResource("16_walk_03")
 }],
 "loop": false,
 "name": &"walk_03",
@@ -53,7 +55,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("15_walk_04")
+"texture": ExtResource("17_walk_04")
 }],
 "loop": false,
 "name": &"walk_04",
@@ -109,6 +111,22 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("11_right_return_01")
+}],
+"loop": false,
+"name": &"right_return_01",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("12_right_return_02")
+}],
+"loop": false,
+"name": &"right_return_02",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": ExtResource("8_right_anticipation")
 }],
 "loop": false,
@@ -117,7 +135,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("11_right_smear")
+"texture": ExtResource("13_right_smear")
 }],
 "loop": false,
 "name": &"right_smear",
@@ -245,16 +263,16 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("12_walk_01")
+"texture": ExtResource("14_walk_01")
 }, {
 "duration": 1.0,
-"texture": ExtResource("13_walk_02")
+"texture": ExtResource("15_walk_02")
 }, {
 "duration": 1.0,
-"texture": ExtResource("14_walk_03")
+"texture": ExtResource("16_walk_03")
 }, {
 "duration": 1.0,
-"texture": ExtResource("15_walk_04")
+"texture": ExtResource("17_walk_04")
 }],
 "loop": true,
 "name": &"walk",

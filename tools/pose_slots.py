@@ -15,6 +15,9 @@ Canvas: 128x128 (256x128 where wide=True), transparent, facing right, feet ancho
 BASE = ["idle", "walk_01", "walk_02", "walk_03", "walk_04", "jump", "fall", "hurt",
         "attack_startup", "attack_active", "attack_recovery"]
 
+# Optional, attack-local recovery drawings. Never replace shared recovery/idle art.
+TRANSITIONS = {"berserker": ["right_return_01", "right_return_02"]}
+
 # slot: (fallback, wide, brief)
 SLOTS = {
     "valkyrie": {
