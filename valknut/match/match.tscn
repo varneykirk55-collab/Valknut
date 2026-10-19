@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://valknut/match/match.gd" id="1_match"]
+[ext_resource type="Script" path="res://valknut/match/match_camera.gd" id="2_cam"]
+[ext_resource type="Script" path="res://valknut/match/hud.gd" id="3_hud"]
+[ext_resource type="Script" path="res://valknut/match/pause_menu.gd" id="4_pause"]
+[ext_resource type="Script" path="res://valknut/match/effects.gd" id="5_fx"]
+
+[node name="Match" type="Node2D"]
+process_mode = 1
+script = ExtResource("1_match")
+
+[node name="StageRoot" type="Node2D" parent="."]
+
+[node name="Fighters" type="Node2D" parent="."]
+
+[node name="Effects" type="Node2D" parent="."]
+z_index = 30
+script = ExtResource("5_fx")
+
+[node name="Camera" type="Camera2D" parent="."]
+script = ExtResource("2_cam")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("3_hud")
+
+[node name="PauseMenu" type="CanvasLayer" parent="."]
+process_mode = 3
+script = ExtResource("4_pause")

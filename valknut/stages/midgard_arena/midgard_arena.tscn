@@ -1,0 +1,74 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://valknut/stages/stage.gd" id="1_stage"]
+[ext_resource type="Script" path="res://valknut/stages/ledge.gd" id="2_ledge"]
+[ext_resource type="Script" path="res://valknut/stages/midgard_arena/midgard_backdrop.gd" id="3_backdrop"]
+[ext_resource type="Script" path="res://valknut/stages/midgard_arena/midgard_art.gd" id="4_art"]
+
+[sub_resource type="RectangleShape2D" id="platform_shape"]
+size = Vector2(200, 14)
+
+[node name="MidgardArena" type="Node2D"]
+script = ExtResource("1_stage")
+stage_name = "Midgard Arena"
+blast_zone = Rect2(-1250, -1050, 2500, 1850)
+camera_bounds = Rect2(-1000, -760, 2000, 1260)
+
+[node name="Backdrop" type="Node2D" parent="."]
+script = ExtResource("3_backdrop")
+
+[node name="Ground" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Ground"]
+polygon = PackedVector2Array(-450, 0, 450, 0, 430, 40, 300, 110, -300, 110, -430, 40)
+
+[node name="PlatformLeft" type="StaticBody2D" parent="." groups=["platform"]]
+position = Vector2(-230, -155)
+collision_layer = 2
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformLeft"]
+shape = SubResource("platform_shape")
+one_way_collision = true
+
+[node name="PlatformRight" type="StaticBody2D" parent="." groups=["platform"]]
+position = Vector2(230, -155)
+collision_layer = 2
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformRight"]
+shape = SubResource("platform_shape")
+one_way_collision = true
+
+[node name="Art" type="Node2D" parent="."]
+script = ExtResource("4_art")
+
+[node name="Ledges" type="Node2D" parent="."]
+
+[node name="LedgeLeft" type="Marker2D" parent="Ledges"]
+position = Vector2(-450, 0)
+script = ExtResource("2_ledge")
+dir = 1
+
+[node name="LedgeRight" type="Marker2D" parent="Ledges"]
+position = Vector2(450, 0)
+script = ExtResource("2_ledge")
+dir = -1
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="P1" type="Marker2D" parent="Spawns"]
+position = Vector2(-240, -2)
+
+[node name="P2" type="Marker2D" parent="Spawns"]
+position = Vector2(240, -2)
+
+[node name="Respawns" type="Node2D" parent="."]
+
+[node name="R1" type="Marker2D" parent="Respawns"]
+position = Vector2(-120, -330)
+
+[node name="R2" type="Marker2D" parent="Respawns"]
+position = Vector2(120, -330)

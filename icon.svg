@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="16" fill="#1f2f4a"/>
+  <!-- Valknut: three interlocked triangles -->
+  <g fill="none" stroke="#e8dfc8" stroke-width="7" stroke-linejoin="round">
+    <path d="M64 18 L92 66 L36 66 Z"/>
+    <path d="M44 50 L72 98 L16 98 Z" transform="translate(4,0)"/>
+    <path d="M84 50 L112 98 L56 98 Z" transform="translate(-4,0)"/>
+  </g>
+  <circle cx="64" cy="66" r="6" fill="#8e2a2a"/>
+</svg>
