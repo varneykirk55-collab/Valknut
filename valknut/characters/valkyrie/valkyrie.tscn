@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://valknut/characters/valkyrie/valkyrie.gd" id="1_char"]
 [ext_resource type="Script" path="res://valknut/core/combat/hurtbox.gd" id="2_hurt"]
 [ext_resource type="Script" path="res://valknut/core/visual/slash_fx.gd" id="4_fx"]
-[ext_resource type="Texture2D" path="res://valknut/characters/valkyrie/valkyrie_sheet.png" id="3_sheet"]
+[ext_resource type="SpriteFrames" path="res://valknut/characters/valkyrie/valkyrie_frames.tres" id="3_frames"]
 
 [sub_resource type="RectangleShape2D" id="ecb"]
 size = Vector2(28, 70)
@@ -27,14 +27,13 @@ shape = SubResource("ecb")
 [node name="Body" type="Node2D" parent="Visual/Rig"]
 position = Vector2(0, -42)
 
-[node name="Sprite" type="Sprite2D" parent="Visual/Rig/Body"]
+[node name="Sprite" type="AnimatedSprite2D" parent="Visual/Rig/Body"]
 texture_filter = 2
 position = Vector2(0, 42)
-scale = Vector2(0.7167, 0.7167)
-texture = ExtResource("3_sheet")
-centered = false
-offset = Vector2(-66, -150.6)
-hframes = 12
+scale = Vector2(0.9170, 0.9170)
+sprite_frames = ExtResource("3_frames")
+animation = &"frames"
+offset = Vector2(0, -60)
 
 [node name="SlashFX" type="Node2D" parent="Visual/Rig"]
 script = ExtResource("4_fx")

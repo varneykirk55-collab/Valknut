@@ -6,11 +6,12 @@ percent knockback, DI, teching, ledges, blast zones, best-of-3 rounds with sudde
 **Current build:** Valkyrie and Berserker playable · Midgard Arena · local 1v1 (shared
 keyboard, keyboard + pad, or two pads) · Training mode with a dummy.
 
-**Art:** both legends are drawn from sprite sheets (`valknut/characters/<legend>/<legend>_sheet.png`,
-built from `valknut/art/source/` with the scripts in `tools/`). `AnimationPlayer` picks sheet frames
-and layers motion on top (spins, lunges, squash, ghosting); moves without their own drawing reuse
-the closest frame. P2 wears an alternate costume made by `core/visual/costume_shift.gdshader`
-(hue-shifts the red cloth to blue). Portraits (setup screen, HUD, roster) live in `valknut/art/portraits/`.
+**Art:** each legend is drawn from 128×128 frames (`valknut/characters/<legend>/frames/`,
+cut from the sheets in `valknut/art/source/` by `tools/cut_frames.py`) packed in a SpriteFrames
+resource (`<legend>_frames.tres`) on an AnimatedSprite2D. `AnimationPlayer` keys the frame per
+move (attacks: startup → active → recovery, with active on the first hitbox frame) and layers
+motion and SlashFX effects on top. P2 wears an alternate costume made by
+`core/visual/costume_shift.gdshader` (red cloth → blue). Portraits live in `valknut/art/portraits/`.
 
 ## Run it
 Open the folder in Godot 4.3 or newer (4.7.2 works), press **F5** (main scene: `res://valknut/main.tscn`).
@@ -73,14 +74,14 @@ valknut/
   core/input/                PlayerInput (buffer, flicks, double-taps, c-stick)
   core/fighter/              Fighter base class, FighterStats, state machine, states/ (20 states)
   core/visual/               AnimBuilder (frame-keyed animations), costume shader, ShapePart (placeholder shapes)
-  characters/valkyrie/       scene + sprite sheet, stats + specials, frame data, animations
+  characters/valkyrie/       scene, frames/ + SpriteFrames, stats + specials, frame data, animations
   characters/berserker/      same structure: heavy, twin hand axes
   characters/<others>/       design notes for the next four legends
   stages/                    Stage base, Ledge; midgard_arena/ (playable), jotunheim/ (notes)
   match/                     match flow (rounds, timer, sudden death, training), camera, HUD, effects, pause
   ui/                        title, versus setup, controls screens, MenuList widget
   tests/                     headless gameplay tests + screenshot tool
-  art/source/                original sprite sheets          tools/  sprite sheet pipeline
+  art/source/                source sprite sheets            tools/  frame cutter (cut_frames.py)
 ```
 
 ### Adding a legend

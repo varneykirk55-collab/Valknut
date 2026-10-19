@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b4xxn3gorpj0j"
-path="res://.godot/imported/valkyrie_sheet_source.jpg-c34ad9a51b456db6c7947b8b48b5d0d6.ctex"
+uid="uid://d4bbsk584a0cb"
+path="res://.godot/imported/valkyrie_walk_04.png-60d55770d073eac60e7059ef885ae76c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://valknut/art/source/valkyrie_sheet_source.jpg"
-dest_files=["res://.godot/imported/valkyrie_sheet_source.jpg-c34ad9a51b456db6c7947b8b48b5d0d6.ctex"]
+source_file="res://valknut/characters/valkyrie/frames/valkyrie_walk_04.png"
+dest_files=["res://.godot/imported/valkyrie_walk_04.png-60d55770d073eac60e7059ef885ae76c.ctex"]
 
 [params]
 

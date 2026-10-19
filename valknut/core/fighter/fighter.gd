@@ -690,8 +690,9 @@ func apply_palette(colors: Dictionary) -> void:
 		for key in ["hue_center", "hue_width", "min_saturation"]:
 			if colors.has(key):
 				mat.set_shader_parameter(key, colors[key])
-		for node in rig.find_children("*", "Sprite2D", true, false):
-			(node as Sprite2D).material = mat
+		for node in rig.find_children("*", "Node2D", true, false):
+			if node is Sprite2D or node is AnimatedSprite2D:
+				(node as CanvasItem).material = mat
 
 
 func _draw_overlay() -> void:

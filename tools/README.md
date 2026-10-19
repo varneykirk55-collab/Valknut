@@ -1,19 +1,18 @@
 # Sprite pipeline
 
-Turns the source sheets in `valknut/art/source/` into the in-game sprite sheets.
+`cut_frames.py` turns the labelled sheets in `valknut/art/source/` (`valkyrie_sheet.jpg`,
+`berserker_sheet.jpg`) into the game's frames:
 
 ```
-cd /tmp/sprites                                       # any scratch folder
-python3 <repo>/tools/extract_sprites.py               # → raw_<frame>.png (background keyed out)
-python3 <repo>/tools/sprite_anchors.py                # → anchors_auto.json (feet anchor per frame)
-# optional: anchors_fix.json with {"frame_name": [x, y]} overrides
-python3 <repo>/tools/build_sprite_sheets.py           # → <legend>_sheet.png + sheets.json + preview_*.png
-cp valkyrie_sheet.png <repo>/valknut/characters/valkyrie/
-cp berserker_sheet.png <repo>/valknut/characters/berserker/
+python3 tools/cut_frames.py        # needs Python 3 + Pillow
 ```
 
-Every frame is placed in an equal-size cell with the feet anchor at the same point, so
-the Sprite2D only changes `frame`. If a sheet's cell size or anchor changes
-(see `sheets.json`), update `offset` and `hframes` on the Sprite node in the legend's
-`.tscn`. Frame order (and the constants in `<legend>_anims.gd`) follows `ORDER` in
-`build_sprite_sheets.py`. Needs Python 3 + Pillow.
+Output: `valknut/characters/<legend>/frames/<legend>_<pose>.png` for
+idle, walk_01–04, jump, fall, hurt, attack_startup, attack_active, attack_recovery.
+Frames are 128×128 (attack_active 256×128) with a transparent background and the feet
+at (64, 124). The Berserker sheet has one drawing for jump and fall; it's saved as both.
+
+Each legend's `<legend>_frames.tres` (SpriteFrames) references these files: named
+animations (`idle`, `walk`, `jump`, …, `attack`) for editor use, plus a `frames` strip
+with every pose in a fixed order that the game's AnimationPlayer keys by index
+(see the frame constants at the top of `<legend>_anims.gd`).

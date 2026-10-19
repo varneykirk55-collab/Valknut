@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://1uwqf3rmju21"
-path="res://.godot/imported/berserker_sheet.png-e16960b6c8f80c4cf4a3ee97641518bf.ctex"
+uid="uid://dl0b1cyt6qovd"
+path="res://.godot/imported/valkyrie_walk_01.png-e2931c31b134532a83c5642cc1f579e6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://valknut/characters/berserker/berserker_sheet.png"
-dest_files=["res://.godot/imported/berserker_sheet.png-e16960b6c8f80c4cf4a3ee97641518bf.ctex"]
+source_file="res://valknut/characters/valkyrie/frames/valkyrie_walk_01.png"
+dest_files=["res://.godot/imported/valkyrie_walk_01.png-e2931c31b134532a83c5642cc1f579e6.ctex"]
 
 [params]
 
