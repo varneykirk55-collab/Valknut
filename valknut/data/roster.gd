@@ -10,9 +10,10 @@ const LEGENDS := [
 		"blurb": "Spear and shield. Strong air game, hover recovery, Spear Dive.",
 	},
 	{
-		"id": "berserker", "name": "Berserker", "available": false,
+		"id": "berserker", "name": "Berserker", "available": true,
 		"scene": "res://valknut/characters/berserker/berserker.tscn",
-		"class": "Heavy", "blurb": "Greataxe. Slow, huge launch power, poor recovery.",
+		"class": "Heavy · Grounded",
+		"blurb": "Twin hand axes. Slow, hits like a landslide, poor recovery. Rage Spin.",
 	},
 	{
 		"id": "dwarf", "name": "Dwarf", "available": false,

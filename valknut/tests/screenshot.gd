@@ -12,6 +12,9 @@ func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	Game.mode = Game.Mode.TRAINING
 	Game.debug_draw = "--hitboxes" in args
+	for a in args:
+		if a.begins_with("--legend="):
+			Game.legends[1] = a.trim_prefix("--legend=")
 	var m: Node = load(Game.MATCH_SCENE).instantiate()
 	add_child(m)
 	var p1: Fighter = m.fighters[0]
@@ -71,13 +74,16 @@ func _poses(m: Node, p1: Fighter, p2: Fighter) -> void:
 	for id in ["jab1", "jab2", "jab3", "ftilt", "dtilt", "fsmash", "dsmash", "nair", "fair", "dair",
 			"nspecial", "sspecial", "dspecial", "getup_attack", "ledge_attack"]:
 		var move: MoveData = p1.moves[id]
-		var aerial: bool = id in ["nair", "fair", "dair", "nspecial", "dspecial"]
+		var aerial: bool = id in ["nair", "fair", "dair", "nspecial"] \
+			or (id == "dspecial" and Game.legends[1] == "valkyrie")
 		p1.reset_for_round(Vector2(-100, -160 if aerial else -2), 1)
 		if aerial:
 			p1.sm.change(&"air")
 		await frames(2)
 		p1.start_move(id)
 		var start: int = move.hitboxes[0].start
+		if id == "dspecial" and Game.legends[1] == "berserker":
+			start = 20  # mid-spin
 		await frames(start)
 		m.set_physics_process(false)
 		await shot("pose_" + id)

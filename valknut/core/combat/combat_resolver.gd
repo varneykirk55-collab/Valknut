@@ -16,11 +16,11 @@ func resolve(fighters: Array[Fighter]) -> void:
 		for target in fighters:
 			if target == attacker or not target.can_be_hit():
 				continue
-			if not attacker.can_hit_again(target):
-				continue
 			var hurt := target.hurtbox.world_rect()
 			# First listed hitbox wins when several overlap, so moves list sweetspots first.
 			for hb in boxes:
+				if not attacker.can_hit_with(target, hb.data):
+					continue
 				var r := hb.world_rect()
 				if r.intersects(hurt):
 					var contact := r.intersection(hurt)
@@ -33,7 +33,7 @@ func resolve(fighters: Array[Fighter]) -> void:
 		victims[h.target] = true
 	for h in hits:
 		var attacker: Fighter = h.attacker
-		attacker.register_hit(h.target)
+		attacker.register_hit(h.target, h.data)
 		h.target.receive_hit(attacker, h.data, attacker.charge_mult)
 		hit_landed.emit(attacker, h.target, h.data, h.point)
 	for h in hits:

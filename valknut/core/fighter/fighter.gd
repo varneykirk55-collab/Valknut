@@ -512,17 +512,17 @@ func reset_hit_registry() -> void:
 	_hit_registry.clear()
 
 
-func register_hit(target: Fighter) -> void:
-	_hit_registry[target] = move_frame
+## Registry is per target *and* hitbox group, so a multi-hit's finisher (another group)
+## can still connect after the earlier hits.
+func register_hit(target: Fighter, data: HitboxData) -> void:
+	_hit_registry[[target, data.group]] = move_frame
 
 
-func can_hit_again(target: Fighter) -> bool:
-	if not _hit_registry.has(target):
+func can_hit_with(target: Fighter, data: HitboxData) -> bool:
+	var key := [target, data.group]
+	if not _hit_registry.has(key):
 		return true
-	var rehit := 0
-	for hb in get_active_hitboxes():
-		rehit = maxi(rehit, hb.data.rehit)
-	return rehit > 0 and move_frame - int(_hit_registry[target]) >= rehit
+	return data.rehit > 0 and move_frame - int(_hit_registry[key]) >= data.rehit
 
 
 func receive_hit(attacker: Fighter, data: HitboxData, damage_mult := 1.0) -> void:
@@ -549,7 +549,10 @@ func receive_hit(attacker: Fighter, data: HitboxData, damage_mult := 1.0) -> voi
 		dir.y = -dir.y
 		kb *= 0.8
 
-	combo_count = combo_count + 1 if is_in_hitstun() else 1
+	if not is_in_hitstun():
+		combo_count = 1
+	elif not data.link:
+		combo_count += 1
 	pending_launch = {
 		"kb": kb,
 		"dir": dir,

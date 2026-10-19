@@ -22,6 +22,12 @@ var hitlag_mult := 1.0
 var direction := Direction.FORWARD
 ## Frames before the same move can hit the same target again (0 = once per move).
 var rehit := 0
+## Link hits (the early hits of a multi-hit move) don't advance combo decay, so the
+## whole move stays connected; only the move's finisher counts as a new combo hit.
+var link := false
+## Hitboxes of a move share one hit per target per group. Put a multi-hit's finisher
+## in its own group so the earlier hits don't block it.
+var group := 0
 
 
 static func make(p_start: int, p_end: int, p_offset: Vector2, p_size: Vector2,
@@ -55,4 +61,14 @@ func with_hitlag(mult: float) -> HitboxData:
 
 func with_rehit(frames: int) -> HitboxData:
 	rehit = frames
+	return self
+
+
+func in_group(g: int) -> HitboxData:
+	group = g
+	return self
+
+
+func as_link() -> HitboxData:
+	link = true
 	return self

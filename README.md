@@ -3,7 +3,7 @@
 A Norse-themed 2D platform fighter for **Godot 4.3+** (tested on 4.3 and 4.7.2; GL Compatibility renderer). Smash-style
 percent knockback, DI, teching, ledges, blast zones, best-of-3 rounds with sudden death.
 
-**Current build (first playable):** Valkyrie fully playable · Midgard Arena · local 1v1 (shared
+**Current build:** Valkyrie and Berserker playable · Midgard Arena · local 1v1 (shared
 keyboard, keyboard + pad, or two pads) · Training mode with a dummy. Art is code-drawn
 placeholder shapes, animated with `AnimationPlayer`.
 
@@ -28,6 +28,9 @@ the Versus setup screen. Bindings live in `valknut/autoload/input_setup.gd`.
   or use Strong. Hold to charge (up to 1 s, ×1.4 damage). Side air turns you to face the direction.
 - **Specials (Valkyrie):** neutral/up = *Wings of Valhalla* (rise, hold Special to hover, ends helpless) ·
   side = *Shield Charge* · down = *Spear Dive* (signature; spikes, bounces off on hit).
+- **Specials (Berserker):** neutral/up = *Skull Leap* (short hop, weak recovery, ends helpless) ·
+  side = *Cleaving Lunge* · down = *Rage Spin* (signature; multi-hit + launcher, long punishable endlag).
+  Full move list: `valknut/characters/berserker/README.md`.
 - **Movement:** double-tap to dash → run · tap down in the air to fast-fall · tap down on a platform to drop.
 - **Defense:** Dodge on the ground = spot dodge / roll; in the air = air dodge (directional, once per airtime,
   wavelands on landing). **Tech:** press Dodge just before you hit the ground or a wall while tumbling.
@@ -38,8 +41,8 @@ the Versus setup screen. Bindings live in `valknut/autoload/input_setup.gd`.
 | What | Where |
 |------|-------|
 | Knockback formula, % ramp, hitstun, hitlag, DI, combo decay | `valknut/core/combat/knockback.gd` |
-| Frame data (Valkyrie) | `valknut/characters/valkyrie/valkyrie_moves.gd` |
-| Movement stats | `Valkyrie._make_stats()` in `valkyrie.gd` |
+| Frame data | `valknut/characters/<legend>/<legend>_moves.gd` |
+| Movement stats | `_make_stats()` in `valkyrie.gd` / `berserker.gd` |
 | Buffer (7 f), flick window, double-tap | `valknut/core/input/player_input.gd` |
 | Tech window/lockout, ledge timings | constants at the top of `fighter.gd` / state files |
 
@@ -49,6 +52,10 @@ the Versus setup screen. Bindings live in `valknut/autoload/input_setup.gd`.
 - Hits apply on the same tick for both fighters (trades work); attacker and victim share hitlag; DI is
   read on the last hitlag frame; the input buffer pauses during hitlag.
 - Combo decay: from the 4th consecutive true hit, hitstun shrinks (×0.8, ×0.6, ×0.45), so nothing loops.
+  Multi-hit moves mark their early hits `as_link()` (they don't advance decay) and put the finisher
+  in its own hitbox `group` so it can connect after them.
+- Weight matters: the same Valkyrie forward smash KOs the Valkyrie at ~80% but the Berserker at ~100%;
+  the Berserker's forward smash KOs the Valkyrie at ~65%.
 
 ## Layout
 ```
@@ -61,7 +68,8 @@ valknut/
   core/fighter/              Fighter base class, FighterStats, state machine, states/ (20 states)
   core/visual/               ShapePart (outlined placeholder shapes), AnimBuilder (frame-keyed animations)
   characters/valkyrie/       scene (rig), stats + specials, frame data, animations
-  characters/<others>/       design notes for the next five legends
+  characters/berserker/      same structure: heavy, twin hand axes
+  characters/<others>/       design notes for the next four legends
   stages/                    Stage base, Ledge; midgard_arena/ (playable), jotunheim/ (notes)
   match/                     match flow (rounds, timer, sudden death, training), camera, HUD, effects, pause
   ui/                        title, versus setup, controls screens, MenuList widget
@@ -78,7 +86,8 @@ valknut/
 ```
 godot --headless --path . --fixed-fps 60 res://valknut/tests/sim_test.tscn         # mechanics (37 checks)
 godot --headless --path . --fixed-fps 60 res://valknut/tests/round_flow_test.tscn  # rounds, sudden death, menus
-godot --path . --fixed-fps 60 res://valknut/tests/screenshot.tscn -- /tmp/shots --poses  # hitbox pose sheet
+godot --headless --path . --fixed-fps 60 res://valknut/tests/berserker_test.tscn   # Berserker vs Valkyrie comparisons
+godot --path . --fixed-fps 60 res://valknut/tests/screenshot.tscn -- /tmp/shots --poses --legend=berserker  # hitbox pose sheet
 ```
 They drive real input actions through a live match. Both exit non-zero on failure.
 
