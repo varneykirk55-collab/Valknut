@@ -16,4 +16,4 @@ landing lag, and his recovery is poor.
 | Down special | **Rage Spin** — linked multi-hits + launcher, long exhausted endlag |
 
 Files: `berserker.gd` (stats + special logic), `berserker_moves.gd` (frame data),
-`berserker_anims.gd` (animations), `berserker.tscn` (rig).
+`berserker_anims.gd` (animations), `berserker.tscn` + `berserker_sheet.png` (sprites).

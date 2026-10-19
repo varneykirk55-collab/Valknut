@@ -1,8 +1,8 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://valknut/characters/valkyrie/valkyrie.gd" id="1_char"]
-[ext_resource type="Script" path="res://valknut/core/visual/shape_part.gd" id="2_shape"]
-[ext_resource type="Script" path="res://valknut/core/combat/hurtbox.gd" id="3_hurt"]
+[ext_resource type="Script" path="res://valknut/core/combat/hurtbox.gd" id="2_hurt"]
+[ext_resource type="Texture2D" path="res://valknut/characters/valkyrie/valkyrie_sheet.png" id="3_sheet"]
 
 [sub_resource type="RectangleShape2D" id="ecb"]
 size = Vector2(28, 70)
@@ -26,259 +26,19 @@ shape = SubResource("ecb")
 [node name="Body" type="Node2D" parent="Visual/Rig"]
 position = Vector2(0, -42)
 
-[node name="Wings" type="Node2D" parent="Visual/Rig/Body"]
-position = Vector2(-6, -16)
-scale = Vector2(0.8, 0.8)
-script = ExtResource("2_shape")
-kind = 2
-fill = Color(0.957, 0.949, 0.933, 1)
-points = PackedVector2Array(0, 0, -14, -28, -34, -42, -30, -26, -48, -26, -36, -13, -50, -6, -35, 1, -46, 13, -25, 10, -12, 6)
-
-[node name="Feathers" type="Node2D" parent="Visual/Rig/Body/Wings"]
-script = ExtResource("2_shape")
-kind = 2
-fill = Color(0.812, 0.839, 0.871, 1)
-outline_width = 0
-points = PackedVector2Array(-30, -24, -44, -24, -34, -14, -46, -6, -33, 0, -42, 11, -24, 8, -14, 2)
-
-[node name="Cape" type="Node2D" parent="Visual/Rig/Body"]
-position = Vector2(-4, -18)
-script = ExtResource("2_shape")
-kind = 2
-fill = Color(0.361, 0.071, 0.102, 1)
-palette_slot = "secondary"
-points = PackedVector2Array(0, -2, 6, 2, -4, 54, -20, 50)
-
-[node name="LegBack" type="Node2D" parent="Visual/Rig/Body"]
-position = Vector2(-5, 12)
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-5, 0)
-size = Vector2(10, 30)
-fill = Color(0.478, 0.102, 0.133, 1)
-palette_slot = "primary"
-
-[node name="Boot" type="Node2D" parent="Visual/Rig/Body/LegBack"]
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-6, 21)
-size = Vector2(13, 10)
-fill = Color(0.478, 0.290, 0.141, 1)
-
-[node name="ShieldArm" type="Node2D" parent="Visual/Rig/Body"]
-position = Vector2(-9, -18)
-rotation = 0.15
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-4, 0)
-size = Vector2(8, 22)
-fill = Color(0.910, 0.722, 0.588, 1)
-
-[node name="Bracer" type="Node2D" parent="Visual/Rig/Body/ShieldArm"]
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-5, 10)
-size = Vector2(10, 9)
-fill = Color(0.478, 0.102, 0.133, 1)
-palette_slot = "primary"
-outline_width = 2
-
-[node name="Shield" type="Node2D" parent="Visual/Rig/Body/ShieldArm"]
-position = Vector2(0, 22)
-script = ExtResource("2_shape")
-kind = 1
-radius = 18
-fill = Color(0.361, 0.071, 0.102, 1)
-palette_slot = "secondary"
-
-[node name="Ring" type="Node2D" parent="Visual/Rig/Body/ShieldArm/Shield"]
-script = ExtResource("2_shape")
-kind = 1
-radius = 12
-fill = Color(0.000, 0.000, 0.000, 0)
-outline = Color(0.831, 0.643, 0.227, 1)
-outline_width = 2.5
-
-[node name="Boss" type="Node2D" parent="Visual/Rig/Body/ShieldArm/Shield"]
-script = ExtResource("2_shape")
-kind = 1
-radius = 5
-fill = Color(0.831, 0.643, 0.227, 1)
-palette_slot = "accent"
-outline_width = 2
-
-[node name="Torso" type="Node2D" parent="Visual/Rig/Body"]
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-13, -22)
-size = Vector2(26, 36)
-fill = Color(0.478, 0.102, 0.133, 1)
-palette_slot = "primary"
-
-[node name="Breastplate" type="Node2D" parent="Visual/Rig/Body/Torso"]
-script = ExtResource("2_shape")
-kind = 2
-fill = Color(0.361, 0.071, 0.102, 1)
-palette_slot = "secondary"
-outline = Color(0.831, 0.643, 0.227, 1)
-outline_width = 2
-points = PackedVector2Array(-11, -20, 11, -20, 9, -8, 0, -4, -9, -8)
-
-[node name="Belt" type="Node2D" parent="Visual/Rig/Body/Torso"]
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-13, 4)
-size = Vector2(26, 6)
-fill = Color(0.478, 0.290, 0.141, 1)
-
-[node name="Buckle" type="Node2D" parent="Visual/Rig/Body/Torso"]
-position = Vector2(0, 7)
-script = ExtResource("2_shape")
-kind = 1
-radius = 4.5
-fill = Color(0.831, 0.643, 0.227, 1)
-palette_slot = "accent"
-outline_width = 2
-
-[node name="LegFront" type="Node2D" parent="Visual/Rig/Body"]
-position = Vector2(5, 12)
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-5, 0)
-size = Vector2(10, 30)
-fill = Color(0.478, 0.102, 0.133, 1)
-palette_slot = "primary"
-
-[node name="Knee" type="Node2D" parent="Visual/Rig/Body/LegFront"]
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-5, 8)
-size = Vector2(10, 6)
-fill = Color(0.361, 0.071, 0.102, 1)
-palette_slot = "secondary"
-outline = Color(0.831, 0.643, 0.227, 1)
-outline_width = 1.5
-
-[node name="Boot" type="Node2D" parent="Visual/Rig/Body/LegFront"]
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-6, 21)
-size = Vector2(13, 10)
-fill = Color(0.478, 0.290, 0.141, 1)
-
-[node name="Skirt" type="Node2D" parent="Visual/Rig/Body"]
-script = ExtResource("2_shape")
-kind = 2
-fill = Color(0.478, 0.102, 0.133, 1)
-palette_slot = "primary"
-points = PackedVector2Array(-15, 10, 15, 10, 18, 26, -18, 26)
-
-[node name="Tabard" type="Node2D" parent="Visual/Rig/Body"]
-script = ExtResource("2_shape")
-kind = 2
-fill = Color(0.361, 0.071, 0.102, 1)
-palette_slot = "secondary"
-outline = Color(0.831, 0.643, 0.227, 1)
-outline_width = 2
-points = PackedVector2Array(-5, 10, 7, 10, 6, 32, -4, 32)
-
-[node name="Head" type="Node2D" parent="Visual/Rig/Body"]
-position = Vector2(2, -31)
-script = ExtResource("2_shape")
-kind = 1
-radius = 11
-fill = Color(0.910, 0.722, 0.588, 1)
-
-[node name="Braid" type="Node2D" parent="Visual/Rig/Body/Head"]
-show_behind_parent = true
-script = ExtResource("2_shape")
-kind = 2
-fill = Color(0.788, 0.635, 0.235, 1)
-points = PackedVector2Array(-9, -2, -15, 18, -9, 22, -3, 2)
-
-[node name="Hair" type="Node2D" parent="Visual/Rig/Body/Head"]
-script = ExtResource("2_shape")
-kind = 2
-fill = Color(0.925, 0.788, 0.353, 1)
-points = PackedVector2Array(-12, 2, -12, -7, -5, -13, 4, -13, 11, -8, 11, -3, 5, -6, -3, -5, -6, 4)
-
-[node name="FrontBraid" type="Node2D" parent="Visual/Rig/Body/Head"]
-script = ExtResource("2_shape")
-kind = 2
-fill = Color(0.925, 0.788, 0.353, 1)
-points = PackedVector2Array(-3, 4, 2, 5, 2, 22, -2, 24)
-
-[node name="Eye" type="Node2D" parent="Visual/Rig/Body/Head"]
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(5, -3)
-size = Vector2(3, 4)
-fill = Color(0.078, 0.063, 0.094, 1)
-outline_width = 0
-
-[node name="SpearArm" type="Node2D" parent="Visual/Rig/Body"]
-position = Vector2(6, -18)
-rotation = -0.9
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-4, 0)
-size = Vector2(8, 22)
-fill = Color(0.910, 0.722, 0.588, 1)
-
-[node name="Bracer" type="Node2D" parent="Visual/Rig/Body/SpearArm"]
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-5, 10)
-size = Vector2(10, 9)
-fill = Color(0.478, 0.102, 0.133, 1)
-palette_slot = "primary"
-outline_width = 2
-
-[node name="Spear" type="Node2D" parent="Visual/Rig/Body/SpearArm"]
-position = Vector2(0, 20)
-rotation = -1.456
-
-[node name="Shaft" type="Node2D" parent="Visual/Rig/Body/SpearArm/Spear"]
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-2, -30)
-size = Vector2(4, 90)
-fill = Color(0.659, 0.471, 0.180, 1)
-outline_width = 2
-
-[node name="Wrap" type="Node2D" parent="Visual/Rig/Body/SpearArm/Spear"]
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-2.5, -6)
-size = Vector2(5, 14)
-fill = Color(0.690, 0.165, 0.165, 1)
-outline_width = 1.5
-
-[node name="Collar" type="Node2D" parent="Visual/Rig/Body/SpearArm/Spear"]
-script = ExtResource("2_shape")
-kind = 0
-rect_position = Vector2(-3.5, 54)
-size = Vector2(7, 5)
-fill = Color(0.831, 0.643, 0.227, 1)
-outline_width = 1.5
-
-[node name="Tip" type="Node2D" parent="Visual/Rig/Body/SpearArm/Spear"]
-script = ExtResource("2_shape")
-kind = 2
-fill = Color(0.831, 0.643, 0.227, 1)
-points = PackedVector2Array(-6, 59, 6, 59, 0, 86)
-
-[node name="Hand" type="Node2D" parent="Visual/Rig/Body/SpearArm/Spear"]
-script = ExtResource("2_shape")
-kind = 1
-radius = 5
-fill = Color(0.910, 0.722, 0.588, 1)
-outline_width = 2
+[node name="Sprite" type="Sprite2D" parent="Visual/Rig/Body"]
+texture_filter = 2
+position = Vector2(0, 42)
+scale = Vector2(0.7167, 0.7167)
+texture = ExtResource("3_sheet")
+centered = false
+offset = Vector2(-66, -150.6)
+hframes = 12
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Visual"]
 
 [node name="Hurtbox" type="Area2D" parent="."]
-script = ExtResource("3_hurt")
+script = ExtResource("2_hurt")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
 position = Vector2(0, -42)

@@ -32,7 +32,7 @@ static func build(v: Valkyrie) -> Dictionary:
 	jab3.grounded = true
 	jab3.land_cancels = false
 	jab3.velocity_keys = {5: Vector2(200, 0)}
-	jab3.hit(HitboxData.make(7, 9, Vector2(72, -58), Vector2(76, 20), 6, 40, 50, 70))
+	jab3.hit(HitboxData.make(7, 9, Vector2(64, -54), Vector2(64, 20), 6, 40, 50, 70))
 	m[jab3.id] = jab3
 
 	# --- Tilts --------------------------------------------------------------------
@@ -40,8 +40,8 @@ static func build(v: Valkyrie) -> Dictionary:
 	ftilt.grounded = true
 	ftilt.land_cancels = false
 	ftilt.turn_on_start = true
-	ftilt.hit(HitboxData.make(8, 10, Vector2(96, -58), Vector2(32, 16), 10, 35, 30, 90))  # tip
-	ftilt.hit(HitboxData.make(8, 10, Vector2(52, -58), Vector2(46, 16), 8, 35, 30, 85))
+	ftilt.hit(HitboxData.make(8, 10, Vector2(78, -54), Vector2(30, 18), 10, 35, 30, 90))  # tip
+	ftilt.hit(HitboxData.make(8, 10, Vector2(42, -54), Vector2(44, 18), 8, 35, 30, 85))
 	m[ftilt.id] = ftilt
 
 	var dtilt := MoveData.make("dtilt", 20)  # low sweep, pops up
@@ -57,8 +57,8 @@ static func build(v: Valkyrie) -> Dictionary:
 	fsmash.turn_on_start = true
 	fsmash.charge_frame = 9
 	fsmash.velocity_keys = {10: Vector2(420, 0)}
-	fsmash.hit(HitboxData.make(14, 17, Vector2(100, -58), Vector2(32, 22), 16, 361, 35, 100))
-	fsmash.hit(HitboxData.make(14, 17, Vector2(60, -58), Vector2(52, 22), 14, 361, 32, 95))
+	fsmash.hit(HitboxData.make(14, 17, Vector2(88, -54), Vector2(30, 22), 16, 361, 35, 100))
+	fsmash.hit(HitboxData.make(14, 17, Vector2(52, -54), Vector2(44, 22), 14, 361, 32, 95))
 	m[fsmash.id] = fsmash
 
 	var dsmash := MoveData.make("dsmash", 48)  # sweep front, then back
@@ -83,8 +83,8 @@ static func build(v: Valkyrie) -> Dictionary:
 	fair.autocancel_from = 4
 	fair.autocancel_to = 28
 	fair.turn_on_start = true
-	fair.hit(HitboxData.make(7, 10, Vector2(96, -80), Vector2(34, 24), 12, 40, 25, 95))  # tip
-	fair.hit(HitboxData.make(7, 10, Vector2(56, -70), Vector2(48, 22), 9, 45, 20, 85))
+	fair.hit(HitboxData.make(7, 10, Vector2(80, -68), Vector2(32, 24), 12, 40, 25, 95))  # tip
+	fair.hit(HitboxData.make(7, 10, Vector2(46, -60), Vector2(40, 22), 9, 45, 20, 85))
 	m[fair.id] = fair
 
 	var dair := MoveData.make("dair", 44)  # downward stab; tip spikes

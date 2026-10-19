@@ -6,11 +6,11 @@ percent knockback, DI, teching, ledges, blast zones, best-of-3 rounds with sudde
 **Current build:** Valkyrie and Berserker playable · Midgard Arena · local 1v1 (shared
 keyboard, keyboard + pad, or two pads) · Training mode with a dummy.
 
-**Art:** character portraits (setup screen, HUD, roster strip) come from the reference art in
-`valknut/art/portraits/` (`*_full.png` are the originals; `select`/`bust`/`thumb` are cut-out,
-pre-scaled copies). In-game fighters are still code-drawn shape rigs animated with
-`AnimationPlayer`, colored to match the references; P2 gets an alternate costume
-(`costumes()` in each legend's script). Real in-game sprites need side-view frames per animation.
+**Art:** both legends are drawn from sprite sheets (`valknut/characters/<legend>/<legend>_sheet.png`,
+built from `valknut/art/source/` with the scripts in `tools/`). `AnimationPlayer` picks sheet frames
+and layers motion on top (spins, lunges, squash, ghosting); moves without their own drawing reuse
+the closest frame. P2 wears an alternate costume made by `core/visual/costume_shift.gdshader`
+(hue-shifts the red cloth to blue). Portraits (setup screen, HUD, roster) live in `valknut/art/portraits/`.
 
 ## Run it
 Open the folder in Godot 4.3 or newer (4.7.2 works), press **F5** (main scene: `res://valknut/main.tscn`).
@@ -52,15 +52,15 @@ the Versus setup screen. Bindings live in `valknut/autoload/input_setup.gd`.
 | Tech window/lockout, ledge timings | constants at the top of `fighter.gd` / state files |
 
 - Knockback is Smash's formula (`((p/10 + p·d/20)·200/(w+100)·1.4 + 18)·g/100 + b`) using the percent
-  *after* the hit, plus a ramp past 100% so kills come online sharply. Uncharged forward smash KOs
-  around 100–110% near center; forward air off-stage around 130%.
+  *after* the hit, plus a ramp past 100% so kills come online sharply. The Valkyrie's uncharged
+  forward smash KOs around 80% with the spear tip (later with the shaft); forward air off-stage ~130%.
 - Hits apply on the same tick for both fighters (trades work); attacker and victim share hitlag; DI is
   read on the last hitlag frame; the input buffer pauses during hitlag.
 - Combo decay: from the 4th consecutive true hit, hitstun shrinks (×0.8, ×0.6, ×0.45), so nothing loops.
   Multi-hit moves mark their early hits `as_link()` (they don't advance decay) and put the finisher
   in its own hitbox `group` so it can connect after them.
-- Weight matters: the same Valkyrie forward smash KOs the Valkyrie at ~80% but the Berserker at ~100%;
-  the Berserker's forward smash KOs the Valkyrie at ~65%.
+- Weight matters: the Valkyrie's forward smash (spear-tip sweet spot) KOs the Valkyrie at ~80% but the
+  Berserker at ~100%; the Berserker's forward smash KOs the Valkyrie at ~65%.
 
 ## Layout
 ```
@@ -72,14 +72,15 @@ valknut/
   core/combat/               Knockback math, MoveData/HitboxData, Hitbox/Hurtbox areas, CombatResolver
   core/input/                PlayerInput (buffer, flicks, double-taps, c-stick)
   core/fighter/              Fighter base class, FighterStats, state machine, states/ (20 states)
-  core/visual/               ShapePart (outlined placeholder shapes), AnimBuilder (frame-keyed animations)
-  characters/valkyrie/       scene (rig), stats + specials, frame data, animations
+  core/visual/               AnimBuilder (frame-keyed animations), costume shader, ShapePart (placeholder shapes)
+  characters/valkyrie/       scene + sprite sheet, stats + specials, frame data, animations
   characters/berserker/      same structure: heavy, twin hand axes
   characters/<others>/       design notes for the next four legends
   stages/                    Stage base, Ledge; midgard_arena/ (playable), jotunheim/ (notes)
   match/                     match flow (rounds, timer, sudden death, training), camera, HUD, effects, pause
   ui/                        title, versus setup, controls screens, MenuList widget
   tests/                     headless gameplay tests + screenshot tool
+  art/source/                original sprite sheets          tools/  sprite sheet pipeline
 ```
 
 ### Adding a legend

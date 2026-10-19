@@ -7,7 +7,8 @@ extends RefCounted
 ##       "Rig/SpearArm:rotation": [[0, -0.4], [3, -1.6], [12, -1.6], [18, -0.4]],
 ##   })
 ##
-## Keys are [frame, value] at 60 fps. Every track listed in the default pose but not
+## Keys are [frame, value] at 60 fps. Tracks ending in ":frame" (Sprite2D frame index)
+## are discrete; all others interpolate linearly. Every track listed in the default pose but not
 ## in an animation gets a constant key at its default, so poses never leak between
 ## animations. Track paths are relative to the AnimationPlayer's root (the Visual node).
 
@@ -30,8 +31,10 @@ func add(anim_name: String, frames: int, loop: bool, tracks: Dictionary) -> void
 	for path in all:
 		var t := a.add_track(Animation.TYPE_VALUE)
 		a.track_set_path(t, NodePath(path))
-		a.value_track_set_update_mode(t, Animation.UPDATE_CONTINUOUS)
-		a.track_set_interpolation_type(t, Animation.INTERPOLATION_LINEAR)
+		# Sprite frame indices must snap, everything else blends.
+		var discrete := String(path).ends_with(":frame")
+		a.value_track_set_update_mode(t, Animation.UPDATE_DISCRETE if discrete else Animation.UPDATE_CONTINUOUS)
+		a.track_set_interpolation_type(t, Animation.INTERPOLATION_NEAREST if discrete else Animation.INTERPOLATION_LINEAR)
 		var keys = all[path]
 		if keys is Array:
 			for k in keys:

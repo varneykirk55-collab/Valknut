@@ -24,6 +24,7 @@ const TECH_WINDOW := 20
 ## …but after a press you can't try again for this long, so mashing doesn't work.
 const TECH_LOCKOUT := 40
 const PLATFORM_LAYER := 2
+const COSTUME_SHADER := preload("res://valknut/core/visual/costume_shift.gdshader")
 
 const STATES := {
 	&"idle": preload("states/idle_state.gd"),
@@ -674,12 +675,23 @@ func play_anim(anim_name: String, restart := false) -> void:
 		anim.seek(0.0, true)
 
 
+## Applies a costume: recolours ShapeParts by palette slot and, for sprite legends,
+## hue-shifts the sprite when the costume has a "hue_shift" entry.
 func apply_palette(colors: Dictionary) -> void:
 	tag_color = colors.get("tag", Color.WHITE)
 	for node in rig.find_children("*", "ShapePart", true, false):
 		var part := node as ShapePart
 		if part.palette_slot != "" and colors.has(part.palette_slot):
 			part.fill = colors[part.palette_slot]
+	if colors.has("hue_shift"):
+		var mat := ShaderMaterial.new()
+		mat.shader = COSTUME_SHADER
+		mat.set_shader_parameter("hue_shift", colors.hue_shift)
+		for key in ["hue_center", "hue_width", "min_saturation"]:
+			if colors.has(key):
+				mat.set_shader_parameter(key, colors[key])
+		for node in rig.find_children("*", "Sprite2D", true, false):
+			(node as Sprite2D).material = mat
 
 
 func _draw_overlay() -> void:

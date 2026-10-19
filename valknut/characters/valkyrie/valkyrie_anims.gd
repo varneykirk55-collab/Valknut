@@ -1,45 +1,42 @@
 class_name ValkyrieAnims
 extends RefCounted
-## Valkyrie's placeholder animations, keyed in frames so they line up with
-## valkyrie_moves.gd (an attack animation's length = the move's total_frames).
+## Valkyrie's animations, built from her sprite sheet (valkyrie_sheet.png) and keyed in
+## frames so they line up with valkyrie_moves.gd (an attack animation's length = the
+## move's total_frames).
 ##
-## Rotations are radians, clockwise-positive (Godot is y-down). Arms hang down at 0;
-## -PI/2 points an arm straight forward, -PI straight up. The spear lies along its arm
-## at Spear:rotation 0, so "arm forward + spear 0" is a forward thrust.
+## Each animation picks sheet frames (discrete) and adds motion on top: Body rotation
+## (spins, leans), Body position (bobs, lunges), Rig scale (squash/stretch, facing flips)
+## and Rig tint (intangibility ghosting). Moves without a dedicated drawing reuse the
+## closest frame, e.g. down air is the low thrust rotated to point down.
 
+const FRAME := "Rig/Body/Sprite:frame"
 const BODY_POS := "Rig/Body:position"
 const BODY_ROT := "Rig/Body:rotation"
 const RIG_SCALE := "Rig:scale"
 const RIG_TINT := "Rig:modulate"
-const SPEAR_ARM := "Rig/Body/SpearArm:rotation"
-const SPEAR := "Rig/Body/SpearArm/Spear:rotation"
-const SPEAR_POS := "Rig/Body/SpearArm/Spear:position"
-const SHIELD_ARM := "Rig/Body/ShieldArm:rotation"
-const LEG_F := "Rig/Body/LegFront:rotation"
-const LEG_B := "Rig/Body/LegBack:rotation"
-const CAPE := "Rig/Body/Cape:rotation"
-const WINGS := "Rig/Body/Wings:scale"
 
-# Idle stance: spear held diagonally forward-up.
-const ARM_IDLE := -0.9
-const SPEAR_IDLE := -1.456
-const ARM_FWD := -1.571
-const ARM_UP := -2.9
-const ARM_FWD_UP := -1.75
-const ARM_FWD_DOWN := -1.134
-const HAND := Vector2(0, 20)
+# Sheet frames (art/source/valkyrie_sheet_source.jpg, left to right, top to bottom).
+const IDLE := 0
+const WALK_A := 1
+const WALK_B := 2
+const RUN := 3
+const WALK_C := 4
+const JUMP := 5       ## wings out, knees tucked
+const AIR := 6        ## leaning forward, shield first
+const HURT := 7
+const THRUST := 8     ## level spear thrust
+const LUNGE := 9      ## deep lunging thrust
+const LOW := 10       ## low thrust
+const RAISED := 11    ## wings spread, spear raised
+
 const BODY := Vector2(0, -42)
-const CROUCH := Vector2(1.1, 0.7)
-const GHOST := Color(1, 1, 1, 0.4)
-## Wings rest folded behind her back and spread for the hover.
-const WINGS_FOLDED := Vector2(0.8, 0.8)
-const WINGS_SPREAD := Vector2(1.35, 1.35)
+const GHOST := Color(1, 1, 1, 0.45)
+const FLASH := Color(1.7, 1.7, 1.7)
+const SPENT := Color(0.65, 0.65, 0.8)
 const SPIN := TAU
 
 const DEFAULT_POSE := {
-	BODY_POS: BODY, BODY_ROT: 0.0, RIG_SCALE: Vector2.ONE, RIG_TINT: Color.WHITE,
-	SPEAR_ARM: ARM_IDLE, SPEAR: SPEAR_IDLE, SPEAR_POS: HAND, SHIELD_ARM: 0.15,
-	LEG_F: 0.0, LEG_B: 0.0, CAPE: 0.0, WINGS: WINGS_FOLDED,
+	FRAME: IDLE, BODY_POS: BODY, BODY_ROT: 0.0, RIG_SCALE: Vector2.ONE, RIG_TINT: Color.WHITE,
 }
 
 
@@ -48,220 +45,129 @@ static func build() -> AnimationLibrary:
 
 	# --- Movement -------------------------------------------------------------------
 	b.add("idle", 60, true, {
-		BODY_POS: [[0, BODY], [30, BODY + Vector2(0, 2)], [60, BODY]],
-		CAPE: [[0, 0.0], [30, 0.12], [60, 0.0]],
+		BODY_POS: [[0, BODY], [30, BODY + Vector2(0, 1.5)], [60, BODY]],
+		RIG_SCALE: [[0, Vector2.ONE], [30, Vector2(1.01, 0.985)], [60, Vector2.ONE]],
 	})
 	b.add("walk", 32, true, {
-		LEG_F: [[0, 0.45], [16, -0.45], [32, 0.45]],
-		LEG_B: [[0, -0.45], [16, 0.45], [32, -0.45]],
+		FRAME: [[0, WALK_A], [8, WALK_B], [16, WALK_C], [24, WALK_B]],
 		BODY_POS: [[0, BODY], [8, BODY + Vector2(0, -2)], [16, BODY], [24, BODY + Vector2(0, -2)], [32, BODY]],
-		CAPE: 0.2,
 	})
-	b.add("dash", 10, false, {
-		BODY_ROT: 0.22, LEG_F: -0.8, LEG_B: 0.8, CAPE: 0.5, SHIELD_ARM: 0.6,
-	})
+	b.add("dash", 10, false, {FRAME: RUN, BODY_ROT: 0.08})
 	b.add("run", 24, true, {
-		BODY_ROT: 0.18, CAPE: [[0, 0.5], [12, 0.6], [24, 0.5]], SHIELD_ARM: 0.6,
-		LEG_F: [[0, 0.8], [12, -0.8], [24, 0.8]],
-		LEG_B: [[0, -0.8], [12, 0.8], [24, -0.8]],
+		FRAME: [[0, RUN], [12, WALK_C]],
+		BODY_ROT: 0.06,
 		BODY_POS: [[0, BODY], [6, BODY + Vector2(0, -3)], [12, BODY], [18, BODY + Vector2(0, -3)], [24, BODY]],
 	})
-	b.add("crouch", 1, false, {RIG_SCALE: CROUCH, BODY_ROT: 0.1})
-	b.add("jump_squat", 4, false, {RIG_SCALE: [[0, Vector2(1.05, 0.9)], [4, Vector2(1.15, 0.8)]]})
-	b.add("jump", 20, false, {
-		RIG_SCALE: [[0, Vector2(0.88, 1.14)], [8, Vector2.ONE]],
-		LEG_F: -0.5, LEG_B: 0.4, CAPE: -0.3,
-	})
+	b.add("crouch", 1, false, {RIG_SCALE: Vector2(1.08, 0.72)})
+	b.add("jump_squat", 4, false, {RIG_SCALE: [[0, Vector2(1.04, 0.9)], [4, Vector2(1.12, 0.8)]]})
+	b.add("jump", 20, false, {FRAME: JUMP, RIG_SCALE: [[0, Vector2(0.9, 1.12)], [8, Vector2.ONE]]})
 	b.add("air_jump", 22, false, {
-		WINGS: [[0, WINGS_SPREAD], [10, Vector2(1.1, 0.7)], [22, WINGS_FOLDED]],
+		FRAME: JUMP,
 		BODY_ROT: [[0, 0.0], [18, SPIN]],  # forward flip
-		LEG_F: [[0, -0.9], [18, -0.3]], LEG_B: [[0, -0.6], [18, 0.3]],
+		RIG_SCALE: [[0, Vector2(0.9, 1.1)], [10, Vector2.ONE]],
 	})
-	b.add("fall", 1, false, {LEG_F: 0.25, LEG_B: -0.2, CAPE: -0.5, SHIELD_ARM: -0.4})
-	b.add("land", 6, false, {RIG_SCALE: [[0, Vector2(1.2, 0.78)], [6, Vector2.ONE]]})
+	b.add("fall", 1, false, {FRAME: AIR})
+	b.add("land", 6, false, {RIG_SCALE: [[0, Vector2(1.18, 0.8)], [6, Vector2.ONE]]})
 
-	# --- Jab string -------------------------------------------------------------------
-	b.add("jab1", 18, false, {
-		SPEAR_ARM: [[0, ARM_IDLE], [2, ARM_FWD], [8, ARM_FWD], [18, ARM_IDLE]],
-		SPEAR: [[0, SPEAR_IDLE], [2, 0.0], [8, 0.0], [18, SPEAR_IDLE]],
-		SPEAR_POS: [[0, HAND], [2, Vector2(0, 0)], [3, Vector2(0, 8)], [8, Vector2(0, 8)], [18, HAND]],
-	})
-	b.add("jab2", 20, false, {
-		SHIELD_ARM: [[0, 0.15], [3, ARM_FWD], [10, ARM_FWD], [20, 0.15]],
-		BODY_POS: [[0, BODY], [4, BODY + Vector2(8, 0)], [12, BODY + Vector2(8, 0)], [20, BODY]],
-		BODY_ROT: [[0, 0.0], [4, 0.12], [12, 0.12], [20, 0.0]],
-		SPEAR_ARM: 0.6, SPEAR: 3.3,
+	# --- Jab string ---------------------------------------------------------------------
+	b.add("jab1", 18, false, {FRAME: [[0, IDLE], [2, THRUST], [10, IDLE]]})
+	b.add("jab2", 20, false, {  # shield bash: step in shield-first
+		FRAME: [[0, WALK_A], [14, IDLE]],
+		BODY_POS: [[0, BODY], [4, BODY + Vector2(10, 0)], [12, BODY + Vector2(10, 0)], [20, BODY]],
+		RIG_SCALE: [[0, Vector2.ONE], [4, Vector2(1.08, 0.94)], [12, Vector2.ONE]],
 	})
 	b.add("jab3", 34, false, {
-		SPEAR_ARM: [[0, -1.2], [6, -1.2], [7, ARM_FWD - 0.2], [18, ARM_FWD - 0.2], [34, ARM_IDLE]],
-		SPEAR: [[0, 0.0], [18, 0.0], [34, SPEAR_IDLE]],
-		SPEAR_POS: [[0, Vector2(0, 0)], [6, Vector2(0, -6)], [7, Vector2(0, 28)], [18, Vector2(0, 28)], [34, HAND]],
-		BODY_ROT: [[0, -0.1], [6, -0.1], [7, 0.2], [18, 0.2], [34, 0.0]],
-		LEG_F: [[0, 0.0], [6, 0.0], [7, -0.6], [18, -0.6], [34, 0.0]],
-		LEG_B: [[0, 0.0], [6, 0.0], [7, 0.5], [18, 0.5], [34, 0.0]],
-		CAPE: [[0, 0.0], [7, 0.5], [34, 0.0]],
+		FRAME: [[0, IDLE], [6, LUNGE], [22, IDLE]],
+		BODY_POS: [[0, BODY + Vector2(-4, 0)], [6, BODY + Vector2(-4, 0)], [7, BODY + Vector2(4, 0)], [22, BODY]],
 	})
 
-	# --- Tilts ------------------------------------------------------------------------
-	b.add("ftilt", 30, false, {
-		SPEAR_ARM: [[0, ARM_IDLE], [6, -1.3], [8, ARM_FWD - 0.12], [16, ARM_FWD - 0.12], [30, ARM_IDLE]],
-		SPEAR: [[0, SPEAR_IDLE], [6, 0.0], [16, 0.0], [30, SPEAR_IDLE]],
-		SPEAR_POS: [[0, HAND], [7, Vector2(0, 6)], [8, Vector2(0, 28)], [16, Vector2(0, 28)], [30, HAND]],
-		BODY_ROT: [[0, 0.0], [7, -0.05], [8, 0.12], [16, 0.12], [30, 0.0]],
-		LEG_F: [[0, 0.0], [8, -0.4], [16, -0.4], [30, 0.0]],
-	})
-	b.add("dtilt", 20, false, {
-		RIG_SCALE: CROUCH,
-		SPEAR_ARM: [[0, -0.6], [5, -0.9], [6, ARM_FWD_DOWN], [12, ARM_FWD_DOWN], [20, -0.6]],
-		SPEAR: [[0, 0.0], [20, 0.0]],
-		SPEAR_POS: [[0, HAND], [5, Vector2(0, 4)], [6, Vector2(0, 28)], [12, Vector2(0, 28)], [20, HAND]],
-	})
-
-	# --- Smashes ----------------------------------------------------------------------
+	# --- Tilts / smashes -------------------------------------------------------------
+	b.add("ftilt", 30, false, {FRAME: [[0, IDLE], [7, THRUST], [18, IDLE]]})
+	b.add("dtilt", 20, false, {FRAME: [[0, LOW], [14, IDLE]]})
 	b.add("fsmash", 52, false, {
-		SPEAR_ARM: [[0, ARM_IDLE], [9, -1.25], [13, ARM_FWD - 0.25], [24, ARM_FWD - 0.25], [52, ARM_IDLE]],
-		SPEAR: [[0, SPEAR_IDLE], [6, 0.0], [24, 0.0], [52, SPEAR_IDLE]],
-		SPEAR_POS: [[0, HAND], [9, Vector2(0, -14)], [13, Vector2(0, 34)], [24, Vector2(0, 34)], [52, HAND]],
-		BODY_ROT: [[0, 0.0], [9, -0.2], [13, 0.25], [24, 0.25], [52, 0.0]],
-		BODY_POS: [[0, BODY], [9, BODY + Vector2(-6, 2)], [13, BODY + Vector2(6, 4)], [24, BODY + Vector2(6, 4)], [52, BODY]],
-		LEG_F: [[0, 0.0], [9, 0.2], [13, -0.7], [24, -0.7], [52, 0.0]],
-		LEG_B: [[0, 0.0], [13, 0.6], [24, 0.6], [52, 0.0]],
-		CAPE: [[0, 0.0], [9, -0.2], [13, 0.7], [24, 0.6], [52, 0.0]],
+		FRAME: [[0, IDLE], [12, LUNGE], [30, IDLE]],
+		BODY_ROT: [[0, 0.0], [9, -0.12], [12, 0.0]],
+		BODY_POS: [[0, BODY], [9, BODY + Vector2(-8, 1)], [12, BODY + Vector2(6, 0)], [30, BODY + Vector2(6, 0)], [52, BODY]],
 	})
 	b.add("dsmash", 48, false, {
-		RIG_SCALE: [[0, Vector2.ONE], [6, Vector2(1.1, 0.82)], [16, Vector2(1.1, 0.82)],
-			[17, Vector2(-1.1, 0.82)], [30, Vector2(-1.1, 0.82)], [31, Vector2(1.0, 1.0)]],
-		SPEAR_ARM: [[0, ARM_IDLE], [6, -2.2], [10, -1.0], [16, -1.0], [17, -2.2], [18, -1.0], [30, -1.0], [48, ARM_IDLE]],
-		SPEAR: [[0, SPEAR_IDLE], [6, 0.0], [30, 0.0], [48, SPEAR_IDLE]],
-		SPEAR_POS: [[0, HAND], [10, Vector2(0, 26)], [30, Vector2(0, 26)], [48, HAND]],
+		FRAME: [[0, IDLE], [8, LOW], [34, IDLE]],
+		# Second hitbox is behind her: flip the drawing to sell the backward sweep.
+		RIG_SCALE: [[0, Vector2.ONE], [16, Vector2.ONE], [17, Vector2(-1, 1)], [30, Vector2(-1, 1)], [31, Vector2.ONE]],
 	})
 
-	# --- Aerials ----------------------------------------------------------------------
-	b.add("nair", 38, false, {
-		BODY_ROT: [[0, 0.0], [4, 0.0], [20, SPIN], [38, SPIN]],
-		SHIELD_ARM: [[0, 0.15], [4, ARM_FWD], [22, ARM_FWD], [38, 0.15]],
-		SPEAR_ARM: [[0, ARM_IDLE], [4, 1.3], [22, 1.3], [38, ARM_IDLE]],
-		SPEAR: [[0, SPEAR_IDLE], [4, 0.0], [22, 0.0], [38, SPEAR_IDLE]],
-		LEG_F: -0.6, LEG_B: -0.3,
-	})
-	b.add("fair", 36, false, {
-		SPEAR_ARM: [[0, ARM_IDLE], [5, -1.0], [7, ARM_FWD_UP], [15, ARM_FWD_UP], [36, ARM_IDLE]],
-		SPEAR: [[0, SPEAR_IDLE], [5, 0.0], [15, 0.0], [36, SPEAR_IDLE]],
-		SPEAR_POS: [[0, HAND], [6, Vector2(0, 2)], [7, Vector2(0, 30)], [15, Vector2(0, 30)], [36, HAND]],
-		BODY_ROT: [[0, 0.0], [6, 0.1], [7, -0.05], [15, -0.05], [36, 0.0]],
-		LEG_F: -0.5, LEG_B: 0.2, CAPE: -0.4,
-	})
+	# --- Aerials -------------------------------------------------------------------------
+	b.add("nair", 38, false, {FRAME: AIR, BODY_ROT: [[0, 0.0], [4, 0.0], [20, SPIN], [38, SPIN]]})
+	b.add("fair", 36, false, {FRAME: [[0, AIR], [6, THRUST], [20, AIR]], BODY_ROT: [[0, 0.0], [6, -0.2], [20, -0.2], [36, 0.0]]})
 	b.add("dair", 44, false, {
-		SPEAR_ARM: [[0, ARM_IDLE], [8, ARM_UP], [11, ARM_UP], [12, 0.0], [24, 0.0], [44, ARM_IDLE]],
-		SPEAR: [[0, SPEAR_IDLE], [8, 0.0], [24, 0.0], [44, SPEAR_IDLE]],
-		SPEAR_POS: [[0, HAND], [11, Vector2(0, -6)], [12, Vector2(0, 32)], [24, Vector2(0, 32)], [44, HAND]],
-		LEG_F: [[0, 0.0], [10, -0.8], [24, -0.8], [44, 0.0]],
-		LEG_B: [[0, 0.0], [10, -0.4], [24, -0.4], [44, 0.0]],
-		RIG_SCALE: [[0, Vector2.ONE], [11, Vector2(1.05, 0.92)], [12, Vector2(0.92, 1.1)], [20, Vector2.ONE]],
+		FRAME: [[0, AIR], [11, LOW], [28, AIR]],
+		BODY_ROT: [[0, 0.0], [10, -0.2], [12, 0.85], [24, 0.85], [32, 0.0]],
 	})
 
-	# --- Specials ---------------------------------------------------------------------
+	# --- Specials ------------------------------------------------------------------------
 	b.add("nspecial", 80, false, {
-		WINGS: [[0, WINGS_FOLDED], [6, WINGS_SPREAD], [74, WINGS_SPREAD], [80, WINGS_FOLDED]],
-		SPEAR_ARM: [[0, ARM_IDLE], [6, ARM_UP], [24, ARM_UP], [30, -2.3], [80, -2.3]],
-		SPEAR: [[0, SPEAR_IDLE], [6, 0.0], [80, 0.0]],
-		SHIELD_ARM: [[0, 0.15], [6, -2.4], [24, -2.4], [30, -1.8], [80, -1.8]],
-		RIG_SCALE: [[0, Vector2(1.1, 0.85)], [6, Vector2(1.1, 0.85)], [8, Vector2(0.85, 1.2)], [16, Vector2.ONE]],
-		LEG_F: -0.3, LEG_B: 0.3,
-		CAPE: [[0, 0.0], [7, -0.8], [24, -0.3], [52, -0.5], [80, -0.3]],
+		FRAME: RAISED,
+		RIG_SCALE: [[0, Vector2(1.08, 0.88)], [6, Vector2(1.08, 0.88)], [8, Vector2(0.88, 1.15)], [16, Vector2.ONE]],
 	})
 	b.add("sspecial", 44, false, {
-		SHIELD_ARM: [[0, 0.15], [7, 0.5], [9, ARM_FWD], [28, ARM_FWD], [44, 0.15]],
-		BODY_ROT: [[0, 0.0], [7, -0.15], [9, 0.35], [26, 0.35], [44, 0.0]],
-		SPEAR_ARM: [[0, ARM_IDLE], [9, 0.9], [28, 0.9], [44, ARM_IDLE]],
-		SPEAR: [[0, SPEAR_IDLE], [9, 3.0], [28, 3.0], [44, SPEAR_IDLE]],
-		LEG_F: [[0, 0.0], [9, -0.7], [26, -0.7], [44, 0.0]],
-		LEG_B: [[0, 0.0], [9, 0.7], [26, 0.7], [44, 0.0]],
-		CAPE: [[0, 0.0], [9, 0.9], [26, 0.9], [44, 0.0]],
+		FRAME: [[0, IDLE], [8, AIR], [30, IDLE]],
+		BODY_ROT: [[0, 0.0], [7, -0.1], [9, 0.25], [26, 0.25], [40, 0.0]],
 	})
 	b.add("dspecial", 40, false, {
-		BODY_ROT: [[0, 0.0], [8, -0.5], [10, -0.5], [12, 1.0], [40, 1.0]],
-		SPEAR_ARM: [[0, ARM_IDLE], [8, ARM_UP], [10, ARM_UP], [12, ARM_FWD], [40, ARM_FWD]],
-		SPEAR: [[0, SPEAR_IDLE], [8, 0.0], [40, 0.0]],
-		SPEAR_POS: [[0, HAND], [11, HAND], [12, Vector2(0, 30)], [40, Vector2(0, 30)]],
-		LEG_F: [[0, 0.0], [12, 0.5], [40, 0.5]],
-		LEG_B: [[0, 0.0], [12, 0.9], [40, 0.9]],
-		CAPE: [[0, 0.0], [12, -1.2], [40, -1.2]],
-		WINGS: [[0, WINGS_FOLDED], [10, Vector2(0.6, 0.6)], [40, Vector2(0.6, 0.6)]],
+		FRAME: [[0, JUMP], [11, LUNGE]],
+		BODY_ROT: [[0, 0.0], [8, -0.3], [10, -0.3], [12, 1.0], [40, 1.0]],
 	})
 
-	# --- Defense ----------------------------------------------------------------------
+	# --- Defense -------------------------------------------------------------------------
 	b.add("spot_dodge", 24, false, {
 		RIG_TINT: [[0, Color.WHITE], [3, GHOST], [16, GHOST], [17, Color.WHITE]],
-		BODY_POS: [[0, BODY], [4, BODY + Vector2(-4, 4)], [16, BODY + Vector2(-4, 4)], [24, BODY]],
-		SHIELD_ARM: [[0, 0.15], [4, -1.2], [16, -1.2], [24, 0.15]],
+		RIG_SCALE: [[0, Vector2.ONE], [4, Vector2(1.06, 0.88)], [16, Vector2(1.06, 0.88)], [24, Vector2.ONE]],
 	})
 	b.add("roll", 34, false, {
+		FRAME: AIR,
 		RIG_TINT: [[0, Color.WHITE], [3, GHOST], [18, GHOST], [19, Color.WHITE]],
 		BODY_ROT: [[0, 0.0], [3, 0.0], [21, SPIN], [34, SPIN]],
-		BODY_POS: [[0, BODY], [3, Vector2(0, -26)], [21, Vector2(0, -26)], [26, BODY]],
-		RIG_SCALE: [[0, Vector2.ONE], [3, Vector2(0.9, 0.85)], [21, Vector2(0.9, 0.85)], [26, Vector2.ONE]],
-		LEG_F: -1.2, LEG_B: -1.0,
+		BODY_POS: [[0, BODY], [3, Vector2(0, -30)], [21, Vector2(0, -30)], [26, BODY]],
+		RIG_SCALE: [[0, Vector2.ONE], [3, Vector2(0.85, 0.85)], [21, Vector2(0.85, 0.85)], [26, Vector2.ONE]],
 	})
 	b.add("air_dodge", 34, false, {
+		FRAME: JUMP,
 		RIG_TINT: [[0, Color.WHITE], [3, GHOST], [24, GHOST], [26, Color.WHITE]],
-		RIG_SCALE: [[0, Vector2.ONE], [3, Vector2(0.9, 0.9)], [24, Vector2(0.9, 0.9)], [30, Vector2.ONE]],
-		SHIELD_ARM: [[0, 0.15], [3, -1.4], [24, -1.4], [34, 0.15]],
-		LEG_F: -0.7, LEG_B: -0.5,
 	})
 
-	# --- Getting hit ------------------------------------------------------------------
-	b.add("hurt", 20, false, {
-		BODY_ROT: [[0, -0.3], [20, -0.1]],
-		SPEAR_ARM: 0.7, SPEAR: 3.0, SHIELD_ARM: 1.0, LEG_F: 0.35, LEG_B: -0.2, CAPE: -0.6,
-	})
-	b.add("tumble", 24, true, {
-		BODY_ROT: [[0, 0.0], [24, -SPIN]],
-		SPEAR_ARM: 1.2, SPEAR: 2.6, SHIELD_ARM: -1.6, LEG_F: 0.6, LEG_B: -0.6,
-	})
+	# --- Getting hit ---------------------------------------------------------------------
+	b.add("hurt", 20, false, {FRAME: HURT})
+	b.add("tumble", 24, true, {FRAME: HURT, BODY_ROT: [[0, 0.0], [24, -SPIN]]})
 	b.add("tech", 20, false, {
-		RIG_TINT: [[0, Color(1.6, 1.6, 1.6)], [6, GHOST], [18, GHOST], [19, Color.WHITE]],
-		RIG_SCALE: [[0, Vector2(1.2, 0.75)], [8, Vector2.ONE]],
+		RIG_TINT: [[0, FLASH], [6, GHOST], [18, GHOST], [19, Color.WHITE]],
+		RIG_SCALE: [[0, Vector2(1.15, 0.8)], [8, Vector2.ONE]],
 	})
-	b.add("knockdown", 20, false, {
-		BODY_ROT: -1.571, BODY_POS: [[0, Vector2(0, -24)], [4, Vector2(0, -12)]],
-		SPEAR_ARM: 0.4, SPEAR: 0.0, SHIELD_ARM: -0.6,
-	})
+	b.add("knockdown", 20, false, {FRAME: HURT, BODY_ROT: -1.4, BODY_POS: [[0, Vector2(0, -26)], [4, Vector2(0, -18)]]})
 	b.add("getup", 30, false, {
+		FRAME: [[0, HURT], [12, IDLE]],
 		RIG_TINT: [[0, GHOST], [22, GHOST], [23, Color.WHITE]],
-		BODY_ROT: [[0, -1.571], [14, 0.0]],
-		BODY_POS: [[0, Vector2(0, -12)], [14, BODY]],
+		BODY_ROT: [[0, -1.4], [12, 0.0]],
+		BODY_POS: [[0, Vector2(0, -18)], [12, BODY]],
 	})
 	b.add("getup_attack", 34, false, {
-		BODY_ROT: [[0, -1.571], [10, -1.571], [16, 0.0]],
-		BODY_POS: [[0, Vector2(0, -12)], [16, BODY]],
-		SPEAR_ARM: [[0, ARM_IDLE], [14, ARM_UP], [16, ARM_FWD], [20, 1.4], [34, ARM_IDLE]],
-		SPEAR: [[0, SPEAR_IDLE], [14, 0.0], [20, 0.0], [34, SPEAR_IDLE]],
+		FRAME: [[0, HURT], [14, LOW], [26, IDLE]],
 		RIG_TINT: [[0, GHOST], [15, GHOST], [16, Color.WHITE]],
+		BODY_ROT: [[0, -1.4], [12, -1.4], [14, 0.0]],
+		BODY_POS: [[0, Vector2(0, -18)], [14, BODY]],
 	})
 
-	# --- Ledge / recovery -------------------------------------------------------------
-	b.add("ledge_hang", 1, false, {
-		BODY_POS: Vector2(0, -28), SPEAR_ARM: -3.0, SPEAR: 3.2, SHIELD_ARM: -3.0,
-		LEG_F: 0.2, LEG_B: -0.1, CAPE: 0.3,
-	})
+	# --- Ledge / recovery ----------------------------------------------------------------
+	b.add("ledge_hang", 1, false, {FRAME: RAISED, BODY_POS: BODY + Vector2(0, 6)})
 	b.add("ledge_climb", 28, false, {
+		FRAME: [[0, RAISED], [10, WALK_A], [20, IDLE]],
 		RIG_TINT: [[0, GHOST], [24, GHOST], [25, Color.WHITE]],
-		BODY_POS: [[0, Vector2(0, -28)], [12, BODY]],
-		RIG_SCALE: [[0, Vector2.ONE], [12, Vector2(1.1, 0.85)], [20, Vector2.ONE]],
-		SPEAR_ARM: [[0, -3.0], [12, ARM_IDLE]], SHIELD_ARM: [[0, -3.0], [12, 0.15]],
 	})
 	b.add("ledge_attack", 30, false, {
-		SPEAR_ARM: [[0, ARM_IDLE], [8, -1.2], [10, ARM_FWD], [16, ARM_FWD], [30, ARM_IDLE]],
-		SPEAR: [[0, SPEAR_IDLE], [8, 0.0], [16, 0.0], [30, SPEAR_IDLE]],
-		SPEAR_POS: [[0, HAND], [10, Vector2(0, 26)], [16, Vector2(0, 26)], [30, HAND]],
+		FRAME: [[0, IDLE], [9, THRUST], [20, IDLE]],
 		RIG_TINT: [[0, GHOST], [9, GHOST], [10, Color.WHITE]],
 	})
 	b.add("helpless", 30, true, {
-		RIG_TINT: Color(0.65, 0.65, 0.8),
-		BODY_ROT: [[0, -0.08], [15, 0.08], [30, -0.08]],
-		SPEAR_ARM: [[0, -2.6], [15, -2.9], [30, -2.6]], SPEAR: 0.0,
-		SHIELD_ARM: [[0, -2.9], [15, -2.6], [30, -2.9]],
-		LEG_F: 0.3, LEG_B: -0.3, CAPE: -0.7,
+		FRAME: AIR,
+		RIG_TINT: SPENT,
+		BODY_ROT: [[0, -0.1], [15, 0.1], [30, -0.1]],
 	})
 	return b.library

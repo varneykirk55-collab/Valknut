@@ -4,9 +4,9 @@ extends RefCounted
 ##
 ## "KB" below is an abstract knockback value in the same units as Smash Bros' formula,
 ## so frame-data intuitions carry over. LAUNCH_SPEED turns KB into pixels/second.
-## Tuned so an uncharged Valkyrie forward smash KOs a
-## middleweight at ~100-110% near stage center and ~85% near the ledge
-## (tests/sim_test.gd measures it in-engine).
+## Tuned so an uncharged Valkyrie forward smash KOs a middleweight at ~80% with the
+## spear-tip sweet spot and ~100% with the shaft, near stage center
+## (tests/sim_test.gd and tests/berserker_test.gd measure it in-engine).
 
 ## px/s of initial launch speed per KB unit.
 const LAUNCH_SPEED := 8.4

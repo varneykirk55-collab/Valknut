@@ -52,12 +52,9 @@ static func _make_stats() -> FighterStats:
 	return s
 
 
-## P1: red cloth, pale fur, gold (reference look). P2: forest cloth, grey wolf fur, iron.
+## P1 as drawn; P2's red cloth and war paint are hue-shifted to woad blue.
 func costumes() -> Array[Dictionary]:
-	return [
-		{"primary": Color("8e1f1f"), "secondary": Color("d6cdbb"), "accent": Color("c9a24a")},
-		{"primary": Color("2f5233"), "secondary": Color("7c7f84"), "accent": Color("9aa3ad")},
-	]
+	return [{}, {"hue_shift": 0.6, "hue_width": 0.07}]
 
 
 func build_moves() -> Dictionary:
