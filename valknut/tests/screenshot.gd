@@ -15,6 +15,15 @@ func _ready() -> void:
 	for a in args:
 		if a.begins_with("--legend="):
 			Game.legends[1] = a.trim_prefix("--legend=")
+		if a.begins_with("--p2="):
+			Game.legends[2] = a.trim_prefix("--p2=")
+	if "--setup" in args:
+		var setup: Node = load(Game.VERSUS_SETUP).instantiate()
+		add_child(setup)
+		await frames(10)
+		await shot("setup")
+		get_tree().quit()
+		return
 	var m: Node = load(Game.MATCH_SCENE).instantiate()
 	add_child(m)
 	var p1: Fighter = m.fighters[0]

@@ -137,7 +137,11 @@ func _ready() -> void:
 	_overlay.z_index = 20
 	_overlay.draw.connect(_draw_overlay)
 	add_child(_overlay)
-	apply_palette(Palette.PLAYER_COLORS.get(player_index, Palette.PLAYER_COLORS[1]))
+	var player_colors: Dictionary = Palette.PLAYER_COLORS.get(player_index, Palette.PLAYER_COLORS[1])
+	var outfits := costumes()
+	var outfit: Dictionary = outfits[(player_index - 1) % outfits.size()].duplicate()
+	outfit["tag"] = player_colors.tag
+	apply_palette(outfit)
 	for state_name in STATES:
 		sm.add(state_name, STATES[state_name].new(), self)
 	air_jumps_left = stats.air_jumps
@@ -164,6 +168,12 @@ func build_animations() -> AnimationLibrary:
 
 
 ## dir: 4-way stick direction (y = 1 is down).
+## Colors for ShapeParts tagged with a palette slot. Costume 0 is P1's (the legend's
+## reference look), costume 1 is P2's, so mirror matches stay readable.
+func costumes() -> Array[Dictionary]:
+	return [Palette.PLAYER_COLORS[1], Palette.PLAYER_COLORS[2]]
+
+
 func get_special(dir: Vector2i, _grounded: bool) -> String:
 	if dir.y > 0:
 		return "dspecial"

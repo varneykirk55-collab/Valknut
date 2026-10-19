@@ -4,8 +4,13 @@ A Norse-themed 2D platform fighter for **Godot 4.3+** (tested on 4.3 and 4.7.2; 
 percent knockback, DI, teching, ledges, blast zones, best-of-3 rounds with sudden death.
 
 **Current build:** Valkyrie and Berserker playable · Midgard Arena · local 1v1 (shared
-keyboard, keyboard + pad, or two pads) · Training mode with a dummy. Art is code-drawn
-placeholder shapes, animated with `AnimationPlayer`.
+keyboard, keyboard + pad, or two pads) · Training mode with a dummy.
+
+**Art:** character portraits (setup screen, HUD, roster strip) come from the reference art in
+`valknut/art/portraits/` (`*_full.png` are the originals; `select`/`bust`/`thumb` are cut-out,
+pre-scaled copies). In-game fighters are still code-drawn shape rigs animated with
+`AnimationPlayer`, colored to match the references; P2 gets an alternate costume
+(`costumes()` in each legend's script). Real in-game sprites need side-view frames per animation.
 
 ## Run it
 Open the folder in Godot 4.3 or newer (4.7.2 works), press **F5** (main scene: `res://valknut/main.tscn`).
@@ -62,7 +67,8 @@ the Versus setup screen. Bindings live in `valknut/autoload/input_setup.gd`.
 valknut/
   main.tscn / main.gd        screen router (title → setup → match)
   autoload/                  InputSetup (bindings), Game (settings, F1/F11), Sfx (synthesized placeholder sounds)
-  data/                      Roster (legends + stages, availability), Palette
+  data/                      Roster (legends + stages, availability, portraits), Palette
+  art/portraits/             legend portrait art (reference originals + in-game sizes)
   core/combat/               Knockback math, MoveData/HitboxData, Hitbox/Hurtbox areas, CombatResolver
   core/input/                PlayerInput (buffer, flicks, double-taps, c-stick)
   core/fighter/              Fighter base class, FighterStats, state machine, states/ (20 states)

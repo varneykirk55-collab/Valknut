@@ -1,7 +1,8 @@
 extends CanvasLayer
 ## Damage percents, stocks and round wins along the bottom, timer up top, center banner.
 
-const PANEL_SIZE := Vector2(250, 104)
+const PANEL_SIZE := Vector2(336, 104)
+const TEXT_X := 116.0
 
 var match_node: Node
 var _panels := {}
@@ -58,19 +59,30 @@ func _make_panel(root: Control, f: Fighter, at: Vector2) -> Dictionary:
 	panel.add_theme_stylebox_override("panel", style)
 	root.add_child(panel)
 
+	var bust_tex := Roster.portrait(_legend_id(f), "bust")
+	if bust_tex:
+		var bust := TextureRect.new()
+		bust.texture = bust_tex
+		bust.position = Vector2(6 + (102 - bust_tex.get_width()) * 0.5, PANEL_SIZE.y - bust_tex.get_height() - 6)
+		bust.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		panel.add_child(bust)
 	var name_label := _label(panel, 18, f.tag_color)
-	name_label.position = Vector2(12, 6)
+	name_label.position = Vector2(TEXT_X, 6)
 	name_label.text = "P%d  %s" % [f.player_index, f.stats.display_name.to_upper()]
 	var pct := _label(panel, 52, Palette.BONE)
-	pct.position = Vector2(12, 26)
+	pct.position = Vector2(TEXT_X, 26)
 	pct.size = Vector2(150, 64)
 	var pips := Pips.new()
-	pips.position = Vector2(170, 34)
+	pips.position = Vector2(TEXT_X + 130, 34)
 	pips.size = Vector2(70, 60)
 	pips.fighter = f
 	pips.match_node = match_node
 	panel.add_child(pips)
 	return {"percent": pct, "pips": pips, "shake": 0.0, "base": pct.position, "last": 0.0}
+
+
+func _legend_id(f: Fighter) -> String:
+	return Game.legends.get(f.player_index, "")
 
 
 func _label(parent: Control, font_size: int, color: Color) -> Label:

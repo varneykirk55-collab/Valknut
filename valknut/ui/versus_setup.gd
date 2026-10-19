@@ -48,6 +48,17 @@ func _ready() -> void:
 
 func _draw() -> void:
 	super()
+	var font := ThemeDB.fallback_font
+	# Selected legends' portraits, P1 left and P2 right of the menu.
+	for p in [1, 2]:
+		var tex := Roster.portrait(Game.legends[p], "select")
+		var cx := 190.0 if p == 1 else 1090.0
+		var tag: Color = Palette.PLAYER_COLORS[p].tag
+		draw_string_outline(font, Vector2(cx - 100, 128), "P%d" % p, HORIZONTAL_ALIGNMENT_CENTER, 200, 28, 8, Palette.OUTLINE)
+		draw_string(font, Vector2(cx - 100, 128), "P%d" % p, HORIZONTAL_ALIGNMENT_CENTER, 200, 28, tag)
+		if tex:
+			draw_texture(tex, Vector2(cx - tex.get_width() * 0.5, 150))
+
 	# Roster strip: every legend, locked ones dimmed.
 	var w := 150.0
 	var x0 := 640.0 - w * Roster.LEGENDS.size() * 0.5
@@ -55,12 +66,15 @@ func _draw() -> void:
 		var l: Dictionary = Roster.LEGENDS[i]
 		var r := Rect2(x0 + i * w + 6, 610, w - 12, 80)
 		draw_rect(r, Palette.DARK_BLUE if l.available else Color(Palette.IRON, 0.25))
+		var thumb := Roster.portrait(l.id, "thumb")
+		if thumb:
+			draw_texture(thumb, Vector2(r.end.x - thumb.get_width() - 4, r.position.y + 5))
 		draw_rect(r, Palette.GOLD if l.available else Palette.IRON, false, 3.0)
-		var font := ThemeDB.fallback_font
-		draw_string(font, r.position + Vector2(8, 30), l.name, HORIZONTAL_ALIGNMENT_LEFT, w - 24, 18,
-			Palette.BONE if l.available else Palette.IRON_LIGHT)
-		draw_string(font, r.position + Vector2(8, 56), l["class"] if l.available else "coming soon",
-			HORIZONTAL_ALIGNMENT_LEFT, w - 24, 13, Palette.BONE_SHADE if l.available else Palette.IRON)
+		for line in [[l.name, 30, 18, Palette.BONE if l.available else Palette.IRON_LIGHT],
+				[l["class"] if l.available else "coming soon", 56, 13, Palette.BONE_SHADE if l.available else Palette.IRON]]:
+			var at: Vector2 = r.position + Vector2(8, line[1])
+			draw_string_outline(font, at, line[0], HORIZONTAL_ALIGNMENT_LEFT, w - 20, line[2], 5, Palette.OUTLINE)
+			draw_string(font, at, line[0], HORIZONTAL_ALIGNMENT_LEFT, w - 20, line[2], line[3])
 
 
 func _on_changed(row: int, idx: int) -> void:
@@ -75,6 +89,7 @@ func _on_changed(row: int, idx: int) -> void:
 		Row.P1_PAD: InputSetup.assign_pad(1, _pad_options[idx])
 		Row.P2_PAD: InputSetup.assign_pad(2, _pad_options[idx])
 	_update_info()
+	queue_redraw()
 
 
 func _on_activated(row: int) -> void:

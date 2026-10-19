@@ -18,7 +18,7 @@ const SHIELD_ARM := "Rig/Body/ShieldArm:rotation"
 const LEG_F := "Rig/Body/LegFront:rotation"
 const LEG_B := "Rig/Body/LegBack:rotation"
 const CAPE := "Rig/Body/Cape:rotation"
-const WINGS := "Rig/Body/Wings:modulate"
+const WINGS := "Rig/Body/Wings:scale"
 
 # Idle stance: spear held diagonally forward-up.
 const ARM_IDLE := -0.9
@@ -31,13 +31,15 @@ const HAND := Vector2(0, 20)
 const BODY := Vector2(0, -42)
 const CROUCH := Vector2(1.1, 0.7)
 const GHOST := Color(1, 1, 1, 0.4)
-const HIDDEN := Color(1, 1, 1, 0)
+## Wings rest folded behind her back and spread for the hover.
+const WINGS_FOLDED := Vector2(0.8, 0.8)
+const WINGS_SPREAD := Vector2(1.35, 1.35)
 const SPIN := TAU
 
 const DEFAULT_POSE := {
 	BODY_POS: BODY, BODY_ROT: 0.0, RIG_SCALE: Vector2.ONE, RIG_TINT: Color.WHITE,
 	SPEAR_ARM: ARM_IDLE, SPEAR: SPEAR_IDLE, SPEAR_POS: HAND, SHIELD_ARM: 0.15,
-	LEG_F: 0.0, LEG_B: 0.0, CAPE: 0.0, WINGS: HIDDEN,
+	LEG_F: 0.0, LEG_B: 0.0, CAPE: 0.0, WINGS: WINGS_FOLDED,
 }
 
 
@@ -71,6 +73,7 @@ static func build() -> AnimationLibrary:
 		LEG_F: -0.5, LEG_B: 0.4, CAPE: -0.3,
 	})
 	b.add("air_jump", 22, false, {
+		WINGS: [[0, WINGS_SPREAD], [10, Vector2(1.1, 0.7)], [22, WINGS_FOLDED]],
 		BODY_ROT: [[0, 0.0], [18, SPIN]],  # forward flip
 		LEG_F: [[0, -0.9], [18, -0.3]], LEG_B: [[0, -0.6], [18, 0.3]],
 	})
@@ -159,7 +162,7 @@ static func build() -> AnimationLibrary:
 
 	# --- Specials ---------------------------------------------------------------------
 	b.add("nspecial", 80, false, {
-		WINGS: [[0, HIDDEN], [6, Color.WHITE], [74, Color.WHITE], [80, HIDDEN]],
+		WINGS: [[0, WINGS_FOLDED], [6, WINGS_SPREAD], [74, WINGS_SPREAD], [80, WINGS_FOLDED]],
 		SPEAR_ARM: [[0, ARM_IDLE], [6, ARM_UP], [24, ARM_UP], [30, -2.3], [80, -2.3]],
 		SPEAR: [[0, SPEAR_IDLE], [6, 0.0], [80, 0.0]],
 		SHIELD_ARM: [[0, 0.15], [6, -2.4], [24, -2.4], [30, -1.8], [80, -1.8]],
@@ -184,7 +187,7 @@ static func build() -> AnimationLibrary:
 		LEG_F: [[0, 0.0], [12, 0.5], [40, 0.5]],
 		LEG_B: [[0, 0.0], [12, 0.9], [40, 0.9]],
 		CAPE: [[0, 0.0], [12, -1.2], [40, -1.2]],
-		WINGS: [[0, HIDDEN], [10, Color(1, 1, 1, 0.8)], [40, Color(1, 1, 1, 0.8)]],
+		WINGS: [[0, WINGS_FOLDED], [10, Vector2(0.6, 0.6)], [40, Vector2(0.6, 0.6)]],
 	})
 
 	# --- Defense ----------------------------------------------------------------------

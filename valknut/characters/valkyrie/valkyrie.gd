@@ -47,6 +47,14 @@ static func _make_stats() -> FighterStats:
 	return s
 
 
+## P1 wears her reference colors (crimson + gold); P2 a steel-blue + silver set.
+func costumes() -> Array[Dictionary]:
+	return [
+		{"primary": Color("7a1a22"), "secondary": Color("5c121a"), "accent": Color("d4a43a")},
+		{"primary": Color("2c4a6e"), "secondary": Color("1c2f48"), "accent": Color("c8d0d8")},
+	]
+
+
 func build_moves() -> Dictionary:
 	return ValkyrieMoves.build(self)
 

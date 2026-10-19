@@ -6,7 +6,7 @@ const LEGENDS := [
 	{
 		"id": "valkyrie", "name": "Valkyrie", "available": true,
 		"scene": "res://valknut/characters/valkyrie/valkyrie.tscn",
-		"class": "Aerial · Middleweight",
+		"class": "Aerial · Midweight",
 		"blurb": "Spear and shield. Strong air game, hover recovery, Spear Dive.",
 	},
 	{
@@ -49,6 +49,9 @@ const STAGES := [
 ]
 
 
+static var _portraits := {}
+
+
 static func legend(id: String) -> Dictionary:
 	for l in LEGENDS:
 		if l.id == id:
@@ -65,3 +68,14 @@ static func stage(id: String) -> Dictionary:
 
 static func available(list: Array) -> Array:
 	return list.filter(func(e): return e.available)
+
+
+## Portrait art for a legend, or null if none exists yet.
+## kind: "select" (300 px tall, setup screen), "bust" (HUD), "thumb" (roster strip),
+## "full" (original reference art).
+## Cached so textures drawn from _draw() stay alive after the draw call returns.
+static func portrait(id: String, kind: String) -> Texture2D:
+	var path := "res://valknut/art/portraits/%s_%s.png" % [id, kind]
+	if not _portraits.has(path):
+		_portraits[path] = load(path) if ResourceLoader.exists(path) else null
+	return _portraits[path]
