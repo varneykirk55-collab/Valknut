@@ -700,6 +700,19 @@ func _apply_art_set() -> void:
 	if set_name == "":
 		return
 	var sprite := rig.find_child("Sprite", true, false) as AnimatedSprite2D
+	# A cutout rig (<legend>_<set>_rig.tscn) replaces the sprite; its bones are keyed by
+	# the legend's own animations (build_animations sees art_set), so timing is shared.
+	var rig_path := "res://valknut/characters/%s/%s_%s_rig.tscn" % [legend_id(), legend_id(), set_name]
+	if sprite != null and ResourceLoader.exists(rig_path):
+		var art: Node2D = load(rig_path).instantiate()
+		art.name = "ArtRig"
+		art.position = sprite.position
+		sprite.get_parent().add_child(art)
+		sprite.visible = false
+		art_set = StringName(set_name)
+		push_warning("%s: art set '%s' is a cutout rig; it animates only %s, other moves hold its rest pose"
+			% [stats.display_name, set_name, ", ".join(art.get_meta("animates", PackedStringArray()))])
+		return
 	var path := "res://valknut/characters/%s/%s_%s_frames.tres" % [legend_id(), legend_id(), set_name]
 	if sprite == null or not ResourceLoader.exists(path):
 		push_error("%s: art set '%s' not found (%s); keeping the shipped art" % [stats.display_name, set_name, path])
@@ -718,7 +731,8 @@ func _apply_art_set() -> void:
 ## finished art: one warning per legend, and a label in the F1 debug view.
 func _read_placeholders() -> void:
 	var sprite := rig.find_child("Sprite", true, false) as AnimatedSprite2D
-	if sprite == null or sprite.sprite_frames == null or not sprite.sprite_frames.has_meta("placeholders"):
+	if sprite == null or not sprite.visible or sprite.sprite_frames == null \
+			or not sprite.sprite_frames.has_meta("placeholders"):
 		return
 	placeholder_poses = sprite.sprite_frames.get_meta("placeholders")
 	var who := stats.display_name + ("" if art_set == &"" else " [art set %s]" % art_set)

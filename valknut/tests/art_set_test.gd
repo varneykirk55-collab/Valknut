@@ -80,14 +80,44 @@ func _ready() -> void:
 			check(false, "%s finishes with v2 art" % id)
 	check(true, "every move runs and ends with v2 art")
 
+	print("-- rig art set (cutout proof of concept)")
+	Game.art_sets = {"berserker": "rig"}
+	await spawn("berserker", "valkyrie")
+	var art := p1.rig.find_child("ArtRig", true, false)
+	check(p1.art_set == &"rig" and art != null and not sprite(p1).visible, "cutout rig replaces the sprite")
+	check(p2.art_set == &"" and sprite(p2).visible, "Valkyrie is untouched")
+	var jab := p1.anim.get_animation("jab1")
+	check(jab.find_track(NodePath(BerserkerAnims.ELBOW), Animation.TYPE_VALUE) != -1, "jab1 keys the elbow bone")
+	var stuck := []
+	for id in p1.moves:
+		await reset()
+		if id in ["nair", "fair", "dair"]:
+			p1.global_position = Vector2(-240, -260)
+			p1.sm.change(&"air")
+			await frames(2)
+		p1.start_move(id)
+		if not await wait_until(func(): return p1.sm.current_name != &"attack", 200):
+			stuck.append(id)
+	check(stuck.is_empty(), "every move runs and ends with the rig %s" % [stuck])
+
 	print("-- combat is identical with and without the art set")
 	for take in [["jab1"], ["fsmash"], ["ftilt"], ["jab1", "jab2", "jab3"]]:
 		Game.art_sets = {}
 		var shipped := await trace(take)
 		Game.art_sets = {"berserker": "v2"}
 		var v2 := await trace(take)
-		check(shipped == v2 and shipped.size() > 0, "%s: %d frames of damage, knockback and positions match"
-			% [" > ".join(take), shipped.size()])
+		Game.art_sets = {"berserker": "rig"}
+		var cutout := await trace(take)
+		check(shipped == v2 and shipped == cutout and shipped.size() > 0,
+			"%s: %d frames of damage, knockback and positions match (shipped, v2, rig)" % [" > ".join(take), shipped.size()])
+	Game.art_sets = {"berserker": "rig"}
+	await spawn("berserker", "valkyrie")
+	await reset()
+	p2.global_position = p1.global_position + Vector2(60, 0)
+	await frames(3)
+	p1.start_move("jab1")
+	await frames(30)
+	check(is_equal_approx(p2.percent, 4.0), "rig light attack still deals 4%% (got %.1f)" % p2.percent)
 
 	Game.art_sets = {}
 	print("PASS (0 failures)" if failures == 0 else "FAIL (%d failures)" % failures)

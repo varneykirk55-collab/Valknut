@@ -26,6 +26,11 @@ const STARTUP := &"attack_startup"
 const ACTIVE := &"attack_active"      ## wide axe swing, slash arc and motion lines drawn in
 const RECOVERY := &"attack_recovery"
 
+## Cutout rig (art set "rig", berserker_rig_rig.tscn): the forearm + axe bone.
+const ELBOW := "Rig/Body/ArtRig/Skeleton/Elbow:rotation"
+## Elbow in Rig space (game px), from tools/build_berserker_rig.py.
+const RIG_ELBOW := Vector2(22.5, -58.9)
+
 const BODY := Vector2(0, -46)
 const GHOST := Color(1, 1, 1, 0.45)
 const FLASH := Color(1.7, 1.7, 1.7)
@@ -52,11 +57,15 @@ static func strike(startup: int, active: int, recovery: int, back: int, end: Str
 ## drawings (tools/art_sets.py); every frame number stays the same, so gameplay can't
 ## change. Moves not listed keep their keys (each set's SpriteFrames defines them all).
 static func build(art: StringName = &"") -> AnimationLibrary:
-	var b := AnimBuilder.new(SlashFX.with(DEFAULT_POSE, SlashFX.default_tracks()))
 	var v2 := art == &"v2"
+	var cutout := art == &"rig"
+	var defaults := SlashFX.with(DEFAULT_POSE, SlashFX.default_tracks())
+	if cutout:
+		defaults[ELBOW] = 0.0
+	var b := AnimBuilder.new(defaults)
 
 	# --- Movement: heavy, stompy ---------------------------------------------------------
-	b.add("idle", 60, true, {
+	b.add("idle", 60, true, _rig_idle() if cutout else {
 		# v2: three breathing drawings over the same procedural bob.
 		FRAME: [[0, &"idle_01"], [15, &"idle_02"], [30, &"idle_03"], [45, &"idle_02"]] if v2 else IDLE,
 		BODY_POS: [[0, BODY], [30, BODY + Vector2(0, 2)], [60, BODY]],
@@ -85,7 +94,7 @@ static func build(art: StringName = &"") -> AnimationLibrary:
 	# starts raising both, so the string never passes through idle. Poses are named slots
 	# (tools/pose_slots.py); undrawn ones show placeholders (F1 debug view). Motion is
 	# only weight transfer and the finisher's hop — the swings come from the drawings.
-	b.add("jab1", 20, false, {
+	b.add("jab1", 20, false, _rig_jab1() if cutout else {
 		FRAME: [[0, &"light_anticipation"], [3, &"light_smear"], [4, &"light_contact"], [8, &"light_recovery"],
 			[15, &"light_settle"], [18, IDLE]] if v2 else
 			[[0, &"right_anticipation"], [3, &"right_smear"], [4, &"right_contact"], [8, &"right_follow"],
@@ -214,6 +223,45 @@ static func build(art: StringName = &"") -> AnimationLibrary:
 		BODY_ROT: [[0, -0.08], [15, 0.08], [30, -0.08]],
 	})
 	return b.library
+
+
+## Cutout rig idle: the same procedural breathing as the sprites, plus the axe arm
+## swaying a few degrees with each breath. Feet stay planted (Rig scales from them).
+static func _rig_idle() -> Dictionary:
+	return {
+		BODY_POS: [[0, BODY], [30, BODY + Vector2(0, 2)], [60, BODY]],
+		RIG_SCALE: [[0, Vector2.ONE], [30, Vector2(1.015, 0.98)], [60, Vector2.ONE]],
+		ELBOW: _eased([[0, 0.0], [30, deg_to_rad(-3.0)], [60, 0.0]]),
+	}
+
+
+## Cutout rig light attack (jab1, 20 frames, hit on 4-5): a compact hatchet chop from
+## the elbow. Cock the axe up beside the head (0-2), whip it down through a smear arc
+## (3) to contact out in front at elbow height (4, held through hitlag), carry it on
+## past the hip (8-11) and settle back to idle (11-19). Weight: a squash into the
+## cock and a stretch through the chop, scaled from the feet so they never slide.
+static func _rig_jab1() -> Dictionary:
+	return SlashFX.with({
+		ELBOW: _eased([[0, 0.0], [2, deg_to_rad(-140.0)], [3, deg_to_rad(-100.0)], [4, deg_to_rad(-55.0)],
+			[7, deg_to_rad(-50.0)], [11, deg_to_rad(18.0)], [15, deg_to_rad(6.0)], [19, 0.0]]),
+		RIG_SCALE: [[0, Vector2.ONE], [2, Vector2(1.025, 0.97)], [4, Vector2(0.985, 1.02)], [11, Vector2(1.01, 0.99)],
+			[18, Vector2.ONE]],
+		BODY_POS: BODY,
+	}, SlashFX.arc(RIG_ELBOW, 34, -125, 10, 9, Color(1, 1, 1), 3, 2, 3))
+
+
+## Fills every frame between keys with smoothstep easing (AnimBuilder interpolates
+## linearly), so rig motion accelerates and settles instead of moving robotically.
+static func _eased(keys: Array) -> Array:
+	var out := []
+	for i in keys.size() - 1:
+		var f0: int = keys[i][0]
+		var f1: int = keys[i + 1][0]
+		for f in range(f0, f1):
+			var t := float(f - f0) / (f1 - f0)
+			out.append([f, lerpf(keys[i][1], keys[i + 1][1], t * t * (3.0 - 2.0 * t))])
+	out.append(keys[-1])
+	return out
 
 
 ## Rage Spin: the swing frame whirls (the drawing flips facing every few frames, which

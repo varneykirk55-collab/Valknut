@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/rig/body.png" id="1_body"]
+[ext_resource type="Texture2D" path="res://valknut/characters/berserker/rig/forearm_axe.png" id="2_fore"]
+
+[node name="BerserkerRig" type="Node2D"]
+texture_filter = 4
+scale = Vector2(0.5, 0.5)
+metadata/animates = PackedStringArray("idle", "jab1")
+
+[node name="Body" type="Sprite2D" parent="."]
+texture = ExtResource("1_body")
+centered = false
+position = Vector2(-101.78, -208.00)
+
+[node name="Skeleton" type="Skeleton2D" parent="."]
+
+[node name="Elbow" type="Bone2D" parent="Skeleton"]
+position = Vector2(44.93, -117.81)
+rest = Transform2D(1, 0, 0, 1, 44.93, -117.81)
+auto_calculate_length_and_angle = false
+length = 60.0
+
+[node name="ForearmAxe" type="Sprite2D" parent="Skeleton/Elbow"]
+texture = ExtResource("2_fore")
+centered = false
+position = Vector2(-146.71, -90.19)
