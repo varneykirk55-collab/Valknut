@@ -48,11 +48,17 @@ static func strike(startup: int, active: int, recovery: int, back: int, end: Str
 	return keys
 
 
-static func build() -> AnimationLibrary:
+## `art` is the active art set (Fighter.art_set). Sets only add pose keys for their own
+## drawings (tools/art_sets.py); every frame number stays the same, so gameplay can't
+## change. Moves not listed keep their keys (each set's SpriteFrames defines them all).
+static func build(art: StringName = &"") -> AnimationLibrary:
 	var b := AnimBuilder.new(SlashFX.with(DEFAULT_POSE, SlashFX.default_tracks()))
+	var v2 := art == &"v2"
 
 	# --- Movement: heavy, stompy ---------------------------------------------------------
 	b.add("idle", 60, true, {
+		# v2: three breathing drawings over the same procedural bob.
+		FRAME: [[0, &"idle_01"], [15, &"idle_02"], [30, &"idle_03"], [45, &"idle_02"]] if v2 else IDLE,
 		BODY_POS: [[0, BODY], [30, BODY + Vector2(0, 2)], [60, BODY]],
 		RIG_SCALE: [[0, Vector2.ONE], [30, Vector2(1.015, 0.98)], [60, Vector2.ONE]],
 	})
@@ -80,7 +86,9 @@ static func build() -> AnimationLibrary:
 	# (tools/pose_slots.py); undrawn ones show placeholders (F1 debug view). Motion is
 	# only weight transfer and the finisher's hop — the swings come from the drawings.
 	b.add("jab1", 20, false, {
-		FRAME: [[0, &"right_anticipation"], [3, &"right_smear"], [4, &"right_contact"], [8, &"right_follow"],
+		FRAME: [[0, &"light_anticipation"], [3, &"light_smear"], [4, &"light_contact"], [8, &"light_recovery"],
+			[15, &"light_settle"], [18, IDLE]] if v2 else
+			[[0, &"right_anticipation"], [3, &"right_smear"], [4, &"right_contact"], [8, &"right_follow"],
 			[15, RECOVERY], [18, IDLE]],
 		BODY_POS: [[0, BODY + Vector2(-3, 1)], [4, BODY + Vector2(5, 0)], [14, BODY]],
 	})

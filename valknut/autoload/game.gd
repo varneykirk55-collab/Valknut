@@ -19,6 +19,10 @@ var time_minutes := 3        ## 0 = no timer
 var rounds_to_win := 2       ## best of 3
 var tap_jump := false
 
+## Art set per legend id ("" or absent = the shipped art), e.g. {"berserker": "v2"}.
+## Purely visual: swaps the SpriteFrames, never moves or timing. Built by tools/art_sets.py.
+var art_sets := {}
+
 ## F1 draws hitboxes (red), hurtboxes (yellow/blue) and blast zones.
 var debug_draw := false
 

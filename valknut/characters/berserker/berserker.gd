@@ -63,7 +63,7 @@ func build_moves() -> Dictionary:
 
 
 func build_animations() -> AnimationLibrary:
-	return BerserkerAnims.build()
+	return BerserkerAnims.build(art_set)
 
 
 # --- Skull Leap ---------------------------------------------------------------------

@@ -102,6 +102,8 @@ var charge_button := "attack"
 var anim_hold := false
 ## Frames of white flash left on the victim of a hit (hit confirmation).
 var hit_flash := 0
+## Art set in use (Game.art_sets); empty = the legend's shipped frames.
+var art_set := &""
 ## Pose slots still drawn with stand-in art (from the SpriteFrames' "placeholders" meta).
 var placeholder_poses := PackedStringArray()
 static var _warned_placeholders := {}
@@ -139,6 +141,7 @@ func _ready() -> void:
 	moves = build_moves()
 	_add_shared_moves()
 	anim.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
+	_apply_art_set()
 	anim.add_animation_library(&"", build_animations())
 	_overlay.z_index = 20
 	_overlay.draw.connect(_draw_overlay)
@@ -685,6 +688,30 @@ func play_anim(anim_name: String, restart := false) -> void:
 		anim.seek(0.0, true)
 
 
+## Legend id, from the scene's file name (res://.../berserker.tscn -> "berserker").
+func legend_id() -> String:
+	return scene_file_path.get_file().get_basename()
+
+
+## Swaps in the art set Game.art_sets names for this legend: its SpriteFrames plus the
+## sprite scale/offset that set's canvas needs. Only the visuals change.
+func _apply_art_set() -> void:
+	var set_name: String = Game.art_sets.get(legend_id(), "")
+	if set_name == "":
+		return
+	var sprite := rig.find_child("Sprite", true, false) as AnimatedSprite2D
+	var path := "res://valknut/characters/%s/%s_%s_frames.tres" % [legend_id(), legend_id(), set_name]
+	if sprite == null or not ResourceLoader.exists(path):
+		push_error("%s: art set '%s' not found (%s); keeping the shipped art" % [stats.display_name, set_name, path])
+		return
+	var frames: SpriteFrames = load(path)
+	sprite.sprite_frames = frames
+	sprite.scale = frames.get_meta("sprite_scale", sprite.scale)
+	sprite.offset = frames.get_meta("sprite_offset", sprite.offset)
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	art_set = StringName(set_name)
+
+
 ## Applies a costume: recolours ShapeParts by palette slot and, for sprite legends,
 ## hue-shifts the sprite when the costume has a "hue_shift" entry.
 ## Pose slots without their own drawing yet are flagged, never silently passed off as
@@ -694,10 +721,11 @@ func _read_placeholders() -> void:
 	if sprite == null or sprite.sprite_frames == null or not sprite.sprite_frames.has_meta("placeholders"):
 		return
 	placeholder_poses = sprite.sprite_frames.get_meta("placeholders")
-	if not placeholder_poses.is_empty() and not _warned_placeholders.has(stats.display_name):
-		_warned_placeholders[stats.display_name] = true
+	var who := stats.display_name + ("" if art_set == &"" else " [art set %s]" % art_set)
+	if not placeholder_poses.is_empty() and not _warned_placeholders.has(who):
+		_warned_placeholders[who] = true
 		push_warning("%s: %d combo/heavy pose(s) use placeholder art (see docs/combat_animation.md): %s"
-			% [stats.display_name, placeholder_poses.size(), ", ".join(placeholder_poses)])
+			% [who, placeholder_poses.size(), ", ".join(placeholder_poses)])
 
 
 ## Name of the pose currently shown (a SpriteFrames animation name).
@@ -737,6 +765,11 @@ func _draw_overlay() -> void:
 		Vector2(-7, top - 8), Vector2(7, top - 8), Vector2(0, top)]), tag_color)
 	_overlay.draw_string(ThemeDB.fallback_font, Vector2(-9, top - 12), "P%d" % player_index,
 		HORIZONTAL_ALIGNMENT_LEFT, -1, 14, tag_color)
+	# An art set in progress always labels its stand-in poses, debug view or not.
+	var pose := current_pose()
+	if pose in placeholder_poses and (art_set != &"" or Game.debug_draw):
+		_overlay.draw_string(ThemeDB.fallback_font, Vector2(-60, top - 26), "PLACEHOLDER: %s" % pose,
+			HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1.0, 0.6, 0.1))
 	if not Game.debug_draw:
 		return
 	var hurt := hurtbox.world_rect()
@@ -747,10 +780,6 @@ func _draw_overlay() -> void:
 		_overlay.draw_rect(Rect2(r.position - global_position, r.size), Color(1, 0.1, 0.1, 0.45))
 	_overlay.draw_string(ThemeDB.fallback_font, Vector2(-30, 16), String(sm.current_name),
 		HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.WHITE)
-	var pose := current_pose()
-	if pose in placeholder_poses:
-		_overlay.draw_string(ThemeDB.fallback_font, Vector2(-60, top - 26), "PLACEHOLDER: %s" % pose,
-			HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1.0, 0.6, 0.1))
 
 
 # --- Moves every legend gets ------------------------------------------------------
