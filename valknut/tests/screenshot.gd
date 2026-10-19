@@ -1,6 +1,8 @@
 extends Node
 ## Dev tool: renders a short scripted match and saves PNGs.
-##   godot --path . --fixed-fps 60 res://valknut/tests/screenshot.tscn -- <out_dir>
+##   godot --path . --fixed-fps 60 res://valknut/tests/screenshot.tscn -- <out_dir> [options]
+## Options: --legend=<id> --p2=<id> --hitboxes, and one of --setup (setup screen),
+## --poses (every move's first active frame, hitboxes on), --film (attack filmstrips).
 
 var out_dir := "user://shots"
 
@@ -29,6 +31,10 @@ func _ready() -> void:
 	var p1: Fighter = m.fighters[0]
 	var p2: Fighter = m.fighters[1]
 	await frames(10)
+	if "--film" in args:
+		await _film(m, p1, p2)
+		get_tree().quit()
+		return
 	if "--poses" in args:
 		await _poses(m, p1, p2)
 		get_tree().quit()
@@ -98,6 +104,35 @@ func _poses(m: Node, p1: Fighter, p2: Fighter) -> void:
 		await shot("pose_" + id)
 		m.set_physics_process(true)
 		await frames(move.total_frames)
+
+
+## Filmstrip per attack: crops around P1 every few frames (filmstrip_<move>_<frame>.png).
+func _film(m: Node, p1: Fighter, p2: Fighter) -> void:
+	p2.global_position = Vector2(500, -2)
+	var aerials := ["nair", "fair", "dair", "nspecial", "dspecial"]
+	for id in ["jab1", "jab2", "jab3", "ftilt", "dtilt", "fsmash", "dsmash", "nair", "fair", "dair",
+			"nspecial", "sspecial", "dspecial"]:
+		var move: MoveData = p1.moves[id]
+		var aerial: bool = id in aerials and not (id == "dspecial" and Game.legends[1] == "berserker")
+		p1.reset_for_round(Vector2(-60, -200 if aerial else -2), 1)
+		if aerial:
+			p1.sm.change(&"air")
+		await frames(2)
+		p1.start_move(id)
+		var step := maxi(2, move.total_frames / 10)
+		for f in range(0, mini(move.total_frames, step * 10), step):
+			# Sample by the move's own frame counter (pausing to capture costs ticks).
+			while p1.move_frame < f and p1.sm.current_name == &"attack":
+				await frames(1)
+			m.set_physics_process(false)
+			await RenderingServer.frame_post_draw
+			var img := get_viewport().get_texture().get_image()
+			var at := p1.get_global_transform_with_canvas().origin
+			var r := Rect2i(int(at.x) - 140, int(at.y) - 170, 300, 220)
+			r = r.intersection(Rect2i(Vector2i.ZERO, img.get_size()))
+			img.get_region(r).save_png(out_dir.path_join("film_%s_%02d.png" % [id, f]))
+			m.set_physics_process(true)
+		await frames(40)
 
 
 func shot(name: String) -> void:
