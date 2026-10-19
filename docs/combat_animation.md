@@ -1,5 +1,17 @@
 # Ground combat & animation overhaul — status
 
+Latest visual audit: `previews/right_axe_final_audit/README.md` verifies the supplied
+original design against the source sheet, corrects the Berserker node's linear
+filtering override, and removes the one-frame taller shared recovery from jab1.
+The original-design match remains incomplete; see the comparison before approving art.
+
+Feature-branch update: `astra/berserker-right-axe-art` supplies the four Berserker
+right-axe poses plus two attack-local recovery drawings. Contact and gameplay
+timings are unchanged. The first strike no longer translates the visual body root.
+See `previews/right_axe_polish/README.md` for recordings, tests and visual limitations.
+The original audit below describes the pre-art baseline; 29 of its 33 attack poses
+still remain placeholders.
+
 Branch: `claude/ground-combat-overhaul`. Scope: Valkyrie and Berserker three-hit neutral
 combos, distinct heavy attacks, classification behaviour. No new fighters or stages.
 

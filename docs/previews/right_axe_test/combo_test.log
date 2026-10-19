@@ -1,0 +1,125 @@
+Godot Engine v4.3.stable.official.77dcf97d8 - https://godotengine.org
+
+-- valkyrie vs berserker
+WARNING: Valkyrie: 16 combo/heavy pose(s) use placeholder art (see docs/combat_animation.md): slash_anticipation, slash_smear, slash_contact, slash_follow, bash_anticipation, bash_contact, bash_follow, finisher_windup, finisher_smear, finisher_contact, finisher_follow, heavy_windup, heavy_charge, heavy_smear, heavy_contact, heavy_recovery
+     at: push_warning (core/variant/variant_utility.cpp:1112)
+WARNING: Berserker: 13 combo/heavy pose(s) use placeholder art (see docs/combat_animation.md): left_anticipation, left_smear, left_contact, left_follow, overhead_windup, overhead_smear, overhead_contact, overhead_impact, heavy_windup, heavy_charge, heavy_smear, heavy_contact, heavy_recovery
+     at: push_warning (core/variant/variant_utility.cpp:1112)
+   ok   three presses play jab1 → jab2 → jab3 (["jab1", "jab2", "jab3"])
+   ok   all three hits land: 12% (expected 12)
+   ok   finisher launches much harder than hits 1-2 (kb [28, 28, 66])
+   ok   jab1 shows slash_contact on its first hitbox frame (got slash_contact)
+   ok   jab2 shows bash_contact on its first hitbox frame (got bash_contact)
+   ok   jab3 shows finisher_contact on its first hitbox frame (got finisher_contact)
+   ok   string returns to the idle pose
+   ok   stopping after hit 1: ["jab1"] then idle
+   ok   stopping after hit 2: ["jab1", "jab2"] then idle
+   ok   a press on jab1 frame 2 (chain opens at 7) is remembered and chains into jab2
+   ok   a late press restarts the combo at hit 1
+   ok   mashing advances one hit at a time (["jab1", "jab2"])
+   ok   getting hit cancels the queued combo press ([])
+   ok   after an interrupt the combo restarts at hit 1
+   ok   mashing never exceeds a 3-hit true combo (max 2)
+   ok   victim is pushed out of jab range by the finisher (166 px)
+-- berserker vs valkyrie
+   ok   three presses play jab1 → jab2 → jab3 (["jab1", "jab2", "jab3"])
+   ok   all three hits land: 16% (expected 16)
+   ok   finisher launches much harder than hits 1-2 (kb [34, 35, 85])
+   ok   jab1 shows right_contact on its first hitbox frame (got right_contact)
+   ok   jab2 shows left_contact on its first hitbox frame (got left_contact)
+   ok   jab3 shows overhead_contact on its first hitbox frame (got overhead_contact)
+   ok   string returns to the idle pose
+   ok   stopping after hit 1: ["jab1"] then idle
+   ok   stopping after hit 2: ["jab1", "jab2"] then idle
+   ok   a press on jab1 frame 2 (chain opens at 9) is remembered and chains into jab2
+   ok   a late press restarts the combo at hit 1
+   ok   mashing advances one hit at a time (["jab1", "jab2", "jab3"])
+   ok   getting hit cancels the queued combo press ([])
+   ok   after an interrupt the combo restarts at hit 1
+   ok   mashing never exceeds a 3-hit true combo (max 3)
+   ok   victim is pushed out of jab range by the finisher (176 px)
+-- valkyrie vs valkyrie
+   ok   three presses play jab1 → jab2 → jab3 (["jab1", "jab2", "jab3"])
+   ok   all three hits land: 12% (expected 12)
+   ok   finisher launches much harder than hits 1-2 (kb [28, 29, 67])
+   ok   jab1 shows slash_contact on its first hitbox frame (got slash_contact)
+   ok   jab2 shows bash_contact on its first hitbox frame (got bash_contact)
+   ok   jab3 shows finisher_contact on its first hitbox frame (got finisher_contact)
+   ok   string returns to the idle pose
+   ok   stopping after hit 1: ["jab1"] then idle
+   ok   stopping after hit 2: ["jab1", "jab2"] then idle
+   ok   a press on jab1 frame 2 (chain opens at 7) is remembered and chains into jab2
+   ok   a late press restarts the combo at hit 1
+   ok   mashing advances one hit at a time (["jab1", "jab2"])
+   ok   getting hit cancels the queued combo press ([])
+   ok   after an interrupt the combo restarts at hit 1
+   ok   mashing never exceeds a 3-hit true combo (max 2)
+   ok   victim is pushed out of jab range by the finisher (180 px)
+-- berserker vs berserker
+   ok   three presses play jab1 → jab2 → jab3 (["jab1", "jab2", "jab3"])
+   ok   all three hits land: 16% (expected 16)
+   ok   finisher launches much harder than hits 1-2 (kb [34, 35, 84])
+   ok   jab1 shows right_contact on its first hitbox frame (got right_contact)
+   ok   jab2 shows left_contact on its first hitbox frame (got left_contact)
+   ok   jab3 shows overhead_contact on its first hitbox frame (got overhead_contact)
+   ok   string returns to the idle pose
+   ok   stopping after hit 1: ["jab1"] then idle
+   ok   stopping after hit 2: ["jab1", "jab2"] then idle
+   ok   a press on jab1 frame 2 (chain opens at 9) is remembered and chains into jab2
+   ok   a late press restarts the combo at hit 1
+   ok   mashing advances one hit at a time (["jab1", "jab2", "jab3"])
+   ok   getting hit cancels the queued combo press ([])
+   ok   after an interrupt the combo restarts at hit 1
+   ok   mashing never exceeds a 3-hit true combo (max 3)
+   ok   victim is pushed out of jab range by the finisher (156 px)
+-- valkyrie: data checks
+   ok   jab1 chain window opens after its hit and closes by its last frame
+   ok   jab2 chain window opens after its hit and closes by its last frame
+   ok   jab3 ends the string (no loop back into jab1)
+   ok   heavy has longer recovery than the combo finisher (35 vs 25 frames)
+   ok   heavy has longer anticipation than the finisher
+   ok   heavy hits harder than the finisher
+   ok   heavy attack uses no combo pose slot (shared: [])
+   ok   heavy attack poses are dedicated heavy_* slots ([&"heavy_windup", &"heavy_charge", &"heavy_smear", &"heavy_contact", &"heavy_recovery", &"idle"])
+   ok   every keyed pose exists in valkyrie_frames.tres []
+   ok   nspecial still runs and ends (→ helpless)
+   ok   sspecial still runs and ends (→ idle)
+   ok   dspecial still runs and ends (→ land)
+   ok   nair still runs and ends (→ land)
+   ok   fair still runs and ends (→ land)
+   ok   dair still runs and ends (→ land)
+   ok   ftilt still runs and ends (→ idle)
+   ok   dtilt still runs and ends (→ idle)
+   ok   dsmash still runs and ends (→ idle)
+   ok   fsmash still runs and ends (→ idle)
+-- berserker: data checks
+   ok   jab1 chain window opens after its hit and closes by its last frame
+   ok   jab2 chain window opens after its hit and closes by its last frame
+   ok   jab3 ends the string (no loop back into jab1)
+   ok   heavy has longer recovery than the combo finisher (41 vs 36 frames)
+   ok   heavy has longer anticipation than the finisher
+   ok   heavy hits harder than the finisher
+   ok   heavy attack uses no combo pose slot (shared: [])
+   ok   heavy attack poses are dedicated heavy_* slots ([&"heavy_windup", &"heavy_charge", &"heavy_smear", &"heavy_contact", &"heavy_recovery", &"idle"])
+   ok   every keyed pose exists in berserker_frames.tres []
+   ok   nspecial still runs and ends (→ helpless)
+   ok   sspecial still runs and ends (→ idle)
+   ok   dspecial still runs and ends (→ idle)
+   ok   nair still runs and ends (→ land)
+   ok   fair still runs and ends (→ land)
+   ok   dair still runs and ends (→ land)
+   ok   ftilt still runs and ends (→ idle)
+   ok   dtilt still runs and ends (→ idle)
+   ok   dsmash still runs and ends (→ idle)
+   ok   fsmash still runs and ends (→ idle)
+-- classification
+   ok   archetypes: Valkyrie Vanguard, Berserker Heavy
+   ok   Heavy is heavier (118 vs 92)
+   ok   Heavy is slower on the ground
+   ok   Vanguard has the better air mobility
+   ok   Heavy's combo deals more damage
+   ok   Heavy's heavy attack hits harder
+   ok   Vanguard keeps a spear reach advantage
+   ok   Heavy has the longer recovery on powerful attacks
+
+PASS (0 failures)

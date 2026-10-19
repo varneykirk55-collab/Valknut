@@ -28,7 +28,7 @@ shape = SubResource("ecb")
 position = Vector2(0, -46)
 
 [node name="Sprite" type="AnimatedSprite2D" parent="Visual/Rig/Body"]
-texture_filter = 2
+texture_filter = 1
 position = Vector2(0, 46)
 scale = Vector2(1.3897, 1.3897)
 sprite_frames = ExtResource("3_frames")

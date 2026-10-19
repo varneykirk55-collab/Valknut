@@ -145,20 +145,27 @@ func _film(m: Node, p1: Fighter, p2: Fighter) -> void:
 func _combo_film(m: Node, p1: Fighter, p2: Fighter) -> void:
 	var labels: Array[String] = []
 	var n := 0
-	for take in ["combo", "heavy"]:
+	var first_only := "--first-hit" in OS.get_cmdline_user_args()
+	var repeat_first := first_only and "--repeat-first" in OS.get_cmdline_user_args()
+	var sample_step := 1 if first_only else 2
+	var max_presses := 3 if repeat_first else (1 if first_only else 3)
+	for take in (["combo"] if first_only else ["combo", "heavy"]):
 		p1.reset_for_round(Vector2(-160, -2), 1)
 		p2.reset_for_round(Vector2(-160 + 52, -2), -1)
 		await frames(20)
 		var presses := 0
 		var hold := 0
 		var t := 0
-		while t < 110:
+		var last_press := -40
+		while t < (160 if repeat_first else 110):
 			if take == "combo":
 				# Press for the next hit as soon as the current one has connected; hold
 				# each press a few ticks (captures pause the match between ticks).
 				var mv: MoveData = p1.current_move
-				var want := presses == 0 or (mv != null and presses < 3 and mv.id == "jab%d" % presses \
+				var want := presses == 0 or (mv != null and presses < max_presses and mv.id == "jab%d" % presses \
 					and p1.move_frame >= mv.hitboxes[0].end)
+				if repeat_first:
+					want = presses < max_presses and p1.sm.current_name == &"idle" and t - last_press >= 40
 				if hold > 0:
 					hold -= 1
 					if hold == 0:
@@ -166,17 +173,19 @@ func _combo_film(m: Node, p1: Fighter, p2: Fighter) -> void:
 				elif want:
 					Input.action_press("p1_attack")
 					presses += 1
+					last_press = t
 					hold = 3
 			elif t == 0:
 				Input.action_press("p1_strong")
 			elif t == 3:
 				Input.action_release("p1_strong")
-			if t % 2 == 0:
+			if t % sample_step == 0:
 				m.set_physics_process(false)
 				await RenderingServer.frame_post_draw
 				var img := get_viewport().get_texture().get_image()
 				var at := p1.get_global_transform_with_canvas().origin
-				var r := Rect2i(int(at.x) - 110, int(at.y) - 150, 260, 175).intersection(Rect2i(Vector2i.ZERO, img.get_size()))
+				var r := (Rect2i(int(at.x) - 130, int(at.y) - 220, 320, 245) if first_only else
+					Rect2i(int(at.x) - 110, int(at.y) - 150, 260, 175)).intersection(Rect2i(Vector2i.ZERO, img.get_size()))
 				img.get_region(r).save_png(out_dir.path_join("combo_%03d.png" % n))
 				var mv2: MoveData = p1.current_move
 				var pose := p1.current_pose()
@@ -185,8 +194,12 @@ func _combo_film(m: Node, p1: Fighter, p2: Fighter) -> void:
 				n += 1
 				m.set_physics_process(true)
 			await frames(1)
+			if first_only:
+				# physics_frame fires before the match tick; let that tick finish
+				# before freezing for the next every-frame screenshot.
+				await get_tree().process_frame
 			t += 1
-			if take == "combo" and presses >= 3 and p1.sm.current_name == &"idle" and t > 20:
+			if take == "combo" and presses >= max_presses and p1.sm.current_name == &"idle" and t > 20:
 				break
 			if take == "heavy" and t > 10 and p1.sm.current_name == &"idle":
 				break

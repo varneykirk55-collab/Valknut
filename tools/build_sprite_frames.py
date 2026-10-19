@@ -9,7 +9,7 @@ in the resource's `placeholders` metadata; the game shows them in the F1 debug v
 Also kept for editor use: "walk" (4 frames) and "attack" (startup/active/recovery).
 """
 import os
-from pose_slots import BASE, SLOTS
+from pose_slots import BASE, SLOTS, TRANSITIONS
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 CHARS = os.path.join(ROOT, "valknut", "characters")
@@ -18,6 +18,9 @@ CHARS = os.path.join(ROOT, "valknut", "characters")
 def build(legend: str) -> list:
     frames_dir = os.path.join(CHARS, legend, "frames")
     poses = {p: p for p in BASE}
+    for pose in TRANSITIONS.get(legend, []):
+        if os.path.exists(os.path.join(frames_dir, "%s_%s.png" % (legend, pose))):
+            poses[pose] = pose
     placeholders = []
     for slot, (fallback, _wide, _brief) in SLOTS[legend].items():
         if os.path.exists(os.path.join(frames_dir, "%s_%s.png" % (legend, slot))):

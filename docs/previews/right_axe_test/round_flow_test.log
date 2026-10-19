@@ -1,0 +1,16 @@
+Godot Engine v4.3.stable.official.77dcf97d8 - https://godotengine.org
+
+   ok   title / setup / controls screens instantiate
+WARNING: Valkyrie: 16 combo/heavy pose(s) use placeholder art (see docs/combat_animation.md): slash_anticipation, slash_smear, slash_contact, slash_follow, bash_anticipation, bash_contact, bash_follow, finisher_windup, finisher_smear, finisher_contact, finisher_follow, heavy_windup, heavy_charge, heavy_smear, heavy_contact, heavy_recovery
+     at: push_warning (core/variant/variant_utility.cpp:1112)
+   ok   intro countdown ends in FIGHT
+   ok   last-stock KO gives P1 the round
+   ok   round 2 starts
+   ok   stocks restored for round 2
+   ok   time out with equal stocks → sudden death at 300%%
+   ok   sudden death KO decides the round
+   ok   P2 wins the best-of-3 2-1
+
+PASS (0 failures)
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+     at: cleanup (core/object/object.cpp:2284)

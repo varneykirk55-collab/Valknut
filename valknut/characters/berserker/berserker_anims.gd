@@ -81,8 +81,12 @@ static func build() -> AnimationLibrary:
 	# only weight transfer and the finisher's hop — the swings come from the drawings.
 	b.add("jab1", 20, false, {
 		FRAME: [[0, &"right_anticipation"], [3, &"right_smear"], [4, &"right_contact"], [8, &"right_follow"],
-			[15, RECOVERY], [18, IDLE]],
-		BODY_POS: [[0, BODY + Vector2(-3, 1)], [4, BODY + Vector2(5, 0)], [14, BODY]],
+			[12, &"right_return_01"], [15, &"right_return_02"], [18, IDLE]],
+		# Hold the attack-local settling drawing through frame 17. The shared
+		# recovery drawing is taller and caused a one-frame silhouette pop here.
+		# Weight transfer is drawn into the poses. Keep the visual root planted;
+		# no change to Fighter movement, hitboxes, combo windows or state duration.
+		BODY_POS: BODY,
 	})
 	b.add("jab2", 22, false, {
 		FRAME: [[0, &"left_anticipation"], [4, &"left_smear"], [5, &"left_contact"], [9, &"left_follow"],

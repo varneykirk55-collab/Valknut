@@ -1,0 +1,65 @@
+Godot Engine v4.3.stable.official.77dcf97d8 - https://godotengine.org
+
+WARNING: Valkyrie: 16 combo/heavy pose(s) use placeholder art (see docs/combat_animation.md): slash_anticipation, slash_smear, slash_contact, slash_follow, bash_anticipation, bash_contact, bash_follow, finisher_windup, finisher_smear, finisher_contact, finisher_follow, heavy_windup, heavy_charge, heavy_smear, heavy_contact, heavy_recovery
+     at: push_warning (core/variant/variant_utility.cpp:1112)
+-- movement
+   ok   holding right walks (got walk)
+   ok   walk moved right
+   ok   releasing returns to idle
+-- jumps
+   ok   jump leaves the ground
+   ok   short hop is lower than full hop (-69 vs -150)
+   ok   air jump consumed (left: 1)
+-- jab combo
+   ok   jab1+2+3 deals 3+3+6 = 12% (got 12.0)
+-- forward tilt / flick smash
+   ok   held right + attack = ftilt (8.0%)
+   ok   flick right + attack = fsmash (16.0%)
+-- smash charge
+   ok   charged fsmash deals more than uncharged (22.4%)
+-- kill percents (fsmash, no DI, from P1 spawn)
+   uncharged fsmash KOs at ~80% (near center-left, launched right)
+   ok   fsmash kill percent is in a sane range
+-- hitstun, tumble, tech
+   ok   victim is in hitstun after the hit
+   ok   strong hit causes tumble (got tumble)
+   ok   tumbling dummy lands in knockdown (got knockdown)
+-- ground tech (P1 as victim of a scripted launch)
+   ok   dodge just before landing techs (got tech)
+-- platform drop
+   ok   stands on soft platform
+   ok   tapping down drops through (y=-8)
+-- ledge grab + options
+   ok   falling next to the ledge grabs it
+   ok   ledge grab is briefly invulnerable
+   ok   climbing up lands on stage
+-- recovery: hover from below the stage edge
+   ok   double jumps + hover reach the stage from far below (idle)
+-- spear dive hits and bounces
+   ok   spear dive connects
+   ok   valkyrie bounces back into air state on hit (got air)
+-- combo decay: no infinite jab
+   ok   jab string is at most 3 true hits (max combo 2)
+-- dtilt can't loop
+   ok   repeated down tilt drops within a few hits (max combo 1)
+-- dash, run, air dodge, waveland
+   ok   double-tap dashes (got dash)
+   ok   holding after a dash runs (got run)
+   ok   air dodge is intangible (air_dodge)
+   ok   air dodge used until landing
+-- shield charge
+   ok   shield charge travels and hits (8.0%)
+-- ledge options
+   ok   ledge p1_dodge → ledge_action (got ledge_action)
+   ok   ledge p1_attack → ledge_action (got ledge_action)
+   ok   ledge p1_jump → air (got air)
+   ok   ledge p1_down → air (got air)
+-- knockdown getup attack
+   ok   attack from knockdown = getup attack
+-- blast zone + respawn
+   ok   below the bottom blast zone = KO
+   ok   respawns invulnerable on the rune
+
+PASS (0 failures)
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+     at: cleanup (core/object/object.cpp:2284)
