@@ -6,3 +6,7 @@ export_credentials.cfg
 # Exports
 /build/
 *.tmp
+
+# Python
+__pycache__/
+*.pyc
