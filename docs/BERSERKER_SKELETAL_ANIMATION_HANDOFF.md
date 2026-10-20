@@ -139,6 +139,13 @@ from the feet, so they never slide.
   the same way as `_rig_jab1()`.
 - Keep the v2 sprite set as the fallback until the rig covers every move.
 
+## Full-body layers (follow-up)
+
+Branch `claude/berserker-layers` splits idle_01 into 17 layers with reconstructed hidden
+anatomy, plus joint pivots, for a full rig. Status and compromises are in
+`docs/BERSERKER_LAYERS_REPORT.md`. Those layers are awaiting review and aren't wired into
+the rig yet.
+
 ## Assets still needed
 
 - The layered idle_01 described above. This is the single biggest unlock.

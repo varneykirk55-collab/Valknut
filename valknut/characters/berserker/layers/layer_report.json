@@ -1,0 +1,70 @@
+{
+ "cape": {
+  "visible_px": 30002,
+  "reconstructed_px": 34946
+ },
+ "mantle_back": {
+  "visible_px": 16343,
+  "reconstructed_px": 9220
+ },
+ "leg_lower_L": {
+  "visible_px": 15748,
+  "reconstructed_px": 2648
+ },
+ "leg_lower_R": {
+  "visible_px": 15085,
+  "reconstructed_px": 2690
+ },
+ "leg_upper_L": {
+  "visible_px": 10292,
+  "reconstructed_px": 1561
+ },
+ "leg_upper_R": {
+  "visible_px": 8845,
+  "reconstructed_px": 3131
+ },
+ "pelvis": {
+  "visible_px": 19519,
+  "reconstructed_px": 11664
+ },
+ "loincloth": {
+  "visible_px": 14969,
+  "reconstructed_px": 0
+ },
+ "torso": {
+  "visible_px": 22311,
+  "reconstructed_px": 8058
+ },
+ "arm_upper_L": {
+  "visible_px": 5452,
+  "reconstructed_px": 3236
+ },
+ "arm_upper_R": {
+  "visible_px": 3853,
+  "reconstructed_px": 1983
+ },
+ "mantle_front": {
+  "visible_px": 8587,
+  "reconstructed_px": 1827
+ },
+ "head": {
+  "visible_px": 22050,
+  "reconstructed_px": 0
+ },
+ "axe_L": {
+  "visible_px": 14959,
+  "reconstructed_px": 0
+ },
+ "axe_R": {
+  "visible_px": 13943,
+  "reconstructed_px": 0
+ },
+ "arm_fore_L": {
+  "visible_px": 12699,
+  "reconstructed_px": 0
+ },
+ "arm_fore_R": {
+  "visible_px": 10357,
+  "reconstructed_px": 0
+ }
+}

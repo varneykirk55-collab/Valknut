@@ -1,0 +1,116 @@
+{
+ "space": "source px of idle_01 (620x655); canvas px = source x 0.3176",
+ "draw_order": [
+  "cape",
+  "mantle_back",
+  "leg_lower_L",
+  "leg_lower_R",
+  "leg_upper_L",
+  "leg_upper_R",
+  "pelvis",
+  "loincloth",
+  "torso",
+  "arm_upper_L",
+  "arm_upper_R",
+  "mantle_front",
+  "head",
+  "axe_L",
+  "axe_R",
+  "arm_fore_L",
+  "arm_fore_R"
+ ],
+ "pivots": {
+  "spine_root": [
+   345,
+   300
+  ],
+  "neck": [
+   342,
+   145
+  ],
+  "shoulder_L": [
+   236,
+   182
+  ],
+  "elbow_L": [
+   160,
+   258
+  ],
+  "wrist_L": [
+   118,
+   352
+  ],
+  "shoulder_R": [
+   432,
+   194
+  ],
+  "elbow_R": [
+   462,
+   286
+  ],
+  "wrist_R": [
+   492,
+   368
+  ],
+  "hip_L": [
+   222,
+   404
+  ],
+  "knee_L": [
+   208,
+   490
+  ],
+  "hip_R": [
+   420,
+   404
+  ],
+  "knee_R": [
+   446,
+   492
+  ],
+  "grip_L": [
+   112,
+   362
+  ],
+  "grip_R": [
+   500,
+   382
+  ]
+ },
+ "axes": {
+  "R": {
+   "mirror": false,
+   "matrix": [
+    [
+     1,
+     0,
+     437
+    ],
+    [
+     0,
+     1,
+     348
+    ]
+   ]
+  },
+  "L": {
+   "mirror": true,
+   "matrix": [
+    [
+     1.1267336202773792,
+     0.4280248684839789,
+     -36.63414634146341
+    ],
+    [
+     -0.4280248684839789,
+     1.1267336202773792,
+     374.6260162601626
+    ]
+   ],
+   "rotate_deg": -20.8,
+   "scale": 1.205,
+   "iou_with_drawn_rear_axe": 0.491
+  },
+  "note": "matrix maps axe_master.png pixels (mirrored first when mirror is true) to idle_01 source px"
+ }
+}
