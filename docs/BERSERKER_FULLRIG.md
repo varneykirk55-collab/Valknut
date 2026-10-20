@@ -22,6 +22,9 @@ need an artist.
 
 ## `jab1`: what moves (20 frames, hit on 4–5, unchanged)
 
+> Superseded by the polish pass (`docs/BERSERKER_POLISH.md`). The table below describes the
+> first version, still available as `BerserkerAnims.fullrig_basic_jab`.
+
 | Frame | Phase | Body |
 |---|---|---|
 | 0 | start | slight crouch, axe arm starting up |

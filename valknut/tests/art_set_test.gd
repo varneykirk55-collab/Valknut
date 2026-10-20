@@ -138,6 +138,7 @@ func _ready() -> void:
 			moved.append(bone)
 	check(moved.is_empty(), "jab1 moves every bone by 3 degrees or more %s" % [moved])
 	check(is_equal_approx(jab1.length, 20.0 / 60.0), "jab1 keeps its 20-frame length")
+	check_polish(jab1)
 	var stuck_full := []
 	for id in p1.moves:
 		await reset()
@@ -176,6 +177,32 @@ func _ready() -> void:
 		var fullrig := await trace(take)
 		check(shipped == v2 and shipped == cutout and shipped == fullrig and shipped.size() > 0,
 			"%s: %d frames of damage, knockback and positions match (shipped, v2, rig, fullrig)" % [" > ".join(take), shipped.size()])
+	print("-- repeated light attacks return to the idle pose")
+	Game.art_sets = {"berserker": "fullrig"}
+	await spawn("berserker", "valkyrie")
+	await reset()
+	var arm := p1.rig.find_child("ShoulderR", true, false) as Node2D
+	var hip := p1.rig.find_child("Hips", true, false) as Node2D
+	var rest_hip := hip.position
+	var worst := 0.0
+	var all_idle := true
+	for n in 3:
+		p1.start_move("jab1")
+		var done := await wait_until(func(): return p1.sm.current_name != &"attack", 120)
+		all_idle = all_idle and done
+		await frames(3)
+		worst = maxf(worst, maxf(absf(rad_to_deg(arm.rotation)), hip.position.distance_to(rest_hip)))
+	check(all_idle and worst < 2.0, "3 consecutive jab1s each end back at the idle pose (worst offset %.2f)" % worst)
+
+	print("-- the first full-rig attack is still available")
+	BerserkerAnims.fullrig_basic_jab = true
+	var basic := BerserkerAnims.build(&"fullrig").get_animation("jab1")
+	BerserkerAnims.fullrig_basic_jab = false
+	var polished := BerserkerAnims.build(&"fullrig").get_animation("jab1")
+	check(is_equal_approx(basic.length, polished.length) and not is_equal_approx(
+		_val(basic, BerserkerAnims.P_SH_R + ":rotation", 2), _val(polished, BerserkerAnims.P_SH_R + ":rotation", 2)),
+		"basic and polished jab1 have the same length and different poses")
+
 	for set_name in ["rig", "fullrig"]:
 		Game.art_sets = {"berserker": set_name}
 		await spawn("berserker", "valkyrie")
@@ -217,6 +244,63 @@ func pose_keys(f: Fighter, anim_name: String) -> Array:
 	for k in anim.track_get_key_count(t):
 		out.append(String(anim.track_get_key_value(t, k)))
 	return out
+
+
+func _val(anim: Animation, path: String, frame: float) -> Variant:
+	return anim.value_track_interpolate(anim.find_track(NodePath(path), Animation.TYPE_VALUE), frame / 60.0)
+
+
+## The polished jab1 reads as: load (COG drops, hips and shoulders twist against each
+## other) -> hips-first release -> impact -> follow-through, and stays inside the limits
+## that keep the known artwork gaps hidden (BERSERKER_FULLRIG.md D1-D4, D7).
+func check_polish(a: Animation) -> void:
+	var sk := BerserkerAnims.SK
+	var rot := func(path: String, f: float) -> float: return rad_to_deg(_val(a, path + ":rotation", f))
+	var hips_y := func(f: float) -> float: return (_val(a, BerserkerAnims.P_HIPS + ":position", f) as Vector2).y
+	var hips_x := func(f: float) -> float: return (_val(a, BerserkerAnims.P_HIPS + ":position", f) as Vector2).x
+	var rest_y: float = BerserkerAnims.FR.POS_HIPS.y
+	check(hips_y.call(2) - rest_y >= 6.0, "load: centre of gravity drops at least 6 px (%.1f)" % (hips_y.call(2) - rest_y))
+	check(hips_x.call(2) < BerserkerAnims.FR.POS_HIPS.x - 4.0, "load: weight is shifted back over the rear leg")
+	check(rot.call(BerserkerAnims.P_HIPS, 2) * rot.call(BerserkerAnims.P_SPINE, 2) < 0.0,
+		"load: hips and shoulders twist in opposite directions (%.1f vs %.1f degrees)" % [
+			rot.call(BerserkerAnims.P_HIPS, 2), rot.call(BerserkerAnims.P_SPINE, 2)])
+	var share := func(get: Callable) -> float:
+		return (get.call(3) - get.call(2)) / (get.call(4) - get.call(2))
+	var hip_share: float = share.call(func(f): return hips_x.call(f))
+	var spine_share: float = share.call(func(f): return rot.call(BerserkerAnims.P_SPINE, f))
+	var sh_share: float = share.call(func(f): return rot.call(BerserkerAnims.P_SH_R, f))
+	var wr_share: float = share.call(func(f): return rot.call(BerserkerAnims.P_AX_R, f))
+	check(hip_share > spine_share and spine_share > sh_share and sh_share > wr_share,
+		"release: hips lead, then torso, shoulder, wrist (share of the motion done by frame 3: %.2f > %.2f > %.2f > %.2f)"
+		% [hip_share, spine_share, sh_share, wr_share])
+	var v23: float = absf(rot.call(BerserkerAnims.P_SH_R, 3) - rot.call(BerserkerAnims.P_SH_R, 2))
+	var v34: float = absf(rot.call(BerserkerAnims.P_SH_R, 4) - rot.call(BerserkerAnims.P_SH_R, 3))
+	check(v34 > v23 * 1.4, "release: the arm is fastest just before impact (%.0f then %.0f degrees per frame)" % [v23, v34])
+	check(hips_y.call(4) - rest_y >= 8.0, "impact: weight sinks onto the front leg (hips %.1f px down)" % (hips_y.call(4) - rest_y))
+	var spine_peak := 0.0
+	var chest_lo := 1.0
+	var chest_hi := 1.0
+	var rear_peak := 0.0
+	var step_late := 0.0
+	var bones := [BerserkerAnims.P_HIPS, BerserkerAnims.P_SPINE, BerserkerAnims.P_NECK, BerserkerAnims.P_SH_R,
+		BerserkerAnims.P_EL_R, BerserkerAnims.P_AX_R, BerserkerAnims.P_SH_L, BerserkerAnims.P_EL_L]
+	for f in range(0, 20):
+		spine_peak = maxf(spine_peak, absf(rot.call(BerserkerAnims.P_SPINE, f)))
+		var cx: float = (_val(a, BerserkerAnims.P_CHEST + ":scale", f) as Vector2).x
+		chest_lo = minf(chest_lo, cx)
+		chest_hi = maxf(chest_hi, cx)
+		rear_peak = maxf(rear_peak, absf(rot.call(BerserkerAnims.P_SH_L, f)))
+		if f >= 5:
+			for b in bones:
+				step_late = maxf(step_late, absf(rot.call(b, f + 1) - rot.call(b, f)))
+	check(spine_peak <= 15.0, "limit: torso lean stays within 15 degrees (%.1f)" % spine_peak)
+	check(chest_lo >= 0.95 and chest_hi <= 1.05, "limit: chest scale stays within 5 percent (%.3f to %.3f)" % [chest_lo, chest_hi])
+	check(rear_peak <= 25.0, "limit: rear shoulder stays within 25 degrees (%.1f)" % rear_peak)
+	check(step_late <= 18.0, "follow-through and recovery have no snaps (max %.1f degrees per frame)" % step_late)
+	var end_off := 0.0
+	for b in bones:
+		end_off = maxf(end_off, absf(rot.call(b, 19.0 + 1.0)))
+	check(end_off < 0.5 and hips_y.call(20) - rest_y < 0.1, "recovery ends exactly on the idle pose")
 
 
 ## Path of a rig bone under the Skeleton node.
