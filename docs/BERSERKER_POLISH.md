@@ -38,8 +38,9 @@ move data and were not touched. The budget was redistributed, not stretched:
 
 Spine within ±15°, chest scale within ±5% (0.955–1.03), rear shoulder within 25°: past those
 the known gaps behind the rear shoulder and torso (D1–D4) and the squashed belt medallion (D7)
-become visible. These are enforced by `art_set_test`. At gameplay scale nothing from D1–D4 is
-visible at any frame of the attack.
+become visible. These are enforced by `art_set_test`. At gameplay scale no gap is noticeable at
+any frame of the attack; enlarged about 6×, a few ragged cape fragments show behind the rear
+shoulder around the impact frame (D1/D4, see `docs/BERSERKER_FULLRIG.md`).
 
 The wind-up could not go further: at a shoulder angle past about −150° the forearm crosses his
 face (tested; see the candidate poses in the commit message). A deeper backswing needs a drawn
