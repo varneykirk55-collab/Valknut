@@ -1,0 +1,24 @@
+{
+ "cape": 55227,
+ "mantle_back": 24295,
+ "leg_lower_L": 0,
+ "leg_lower_R": 0,
+ "leg_upper_L": 0,
+ "leg_upper_R": 0,
+ "pelvis": 2919,
+ "loincloth": 0,
+ "torso": 6976,
+ "arm_upper_L": 4201,
+ "arm_upper_R": 3135,
+ "mantle_front": 0,
+ "head": 0,
+ "axe_L": 0,
+ "axe_R": 0,
+ "arm_fore_L": 0,
+ "arm_fore_R": 0,
+ "_idle_max_difference": 5,
+ "_pixels_moved_between_layers": {
+  "arm_upper_L->torso": 279,
+  "arm_upper_L->mantle_front": 29
+ }
+}
