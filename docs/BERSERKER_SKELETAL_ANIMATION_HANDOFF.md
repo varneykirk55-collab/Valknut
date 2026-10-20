@@ -146,6 +146,12 @@ anatomy, plus joint pivots, for a full rig. Status and compromises are in
 `docs/BERSERKER_LAYERS_REPORT.md`. Those layers are awaiting review and aren't wired into
 the rig yet.
 
+## Full-body rig (follow-up)
+
+Branch `claude/berserker-fullrig` turns the 17 layers into a 15-bone rig with leg IK and a
+full-body light attack. Status, defects needing repair and build steps are in
+`docs/BERSERKER_FULLRIG.md`.
+
 ## Assets still needed
 
 - The layered idle_01 described above. This is the single biggest unlock.

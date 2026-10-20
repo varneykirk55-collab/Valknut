@@ -100,6 +100,70 @@ func _ready() -> void:
 			stuck.append(id)
 	check(stuck.is_empty(), "every move runs and ends with the rig %s" % [stuck])
 
+	print("-- full-body rig art set (fullrig)")
+	Game.art_sets = {"berserker": "fullrig"}
+	await spawn("berserker", "valkyrie")
+	var full := p1.rig.find_child("ArtRig", true, false)
+	check(p1.art_set == &"fullrig" and full != null and not sprite(p1).visible, "full-body rig replaces the sprite")
+	check(p2.art_set == &"" and sprite(p2).visible, "Valkyrie is untouched")
+	var layers := full.find_child("Layers", true, false).get_children()
+	var textures := {}
+	for l in layers:
+		textures[(l as Sprite2D).texture.resource_path] = true
+	check(layers.size() == 17 and not textures.is_empty(), "all 17 layers are present (%d)" % layers.size())
+	var axe_l := full.find_child("axe_L", true, false) as Sprite2D
+	var axe_r := full.find_child("axe_R", true, false) as Sprite2D
+	check(axe_l.texture == axe_r.texture and axe_l.scale.is_equal_approx(axe_r.scale), "both axes are the same texture at the same scale")
+	check(axe_l.texture.resource_path.ends_with("axe_master.png"), "both axes use axe_master.png")
+	var bones := ["Hips", "ThighL", "ShinL", "ThighR", "ShinR", "Spine", "Chest", "Neck", "ShoulderL", "ElbowL",
+		"ShoulderR", "ElbowR"]
+	var no_bone := []
+	for bone in bones:
+		if full.find_child(bone, true, false) == null:
+			no_bone.append(bone)
+	check(no_bone.is_empty(), "skeleton has shoulder, elbow, chest, hip and knee bones %s" % [no_bone])
+	var moved := []
+	var jab1 := p1.anim.get_animation("jab1")
+	for bone in ["Hips", "ThighL", "ShinL", "ThighR", "ShinR", "Spine", "Neck", "ShoulderL", "ElbowL", "ShoulderR", "ElbowR"]:
+		var path := NodePath(BerserkerAnims.SK + _bone_path(bone) + ":rotation")
+		var t := jab1.find_track(path, Animation.TYPE_VALUE)
+		var lo := 1e9
+		var hi := -1e9
+		if t != -1:
+			for k in jab1.track_get_key_count(t):
+				var v: float = jab1.track_get_key_value(t, k)
+				lo = minf(lo, v)
+				hi = maxf(hi, v)
+		if t == -1 or rad_to_deg(hi - lo) < 3.0:
+			moved.append(bone)
+	check(moved.is_empty(), "jab1 moves every bone by 3 degrees or more %s" % [moved])
+	check(is_equal_approx(jab1.length, 20.0 / 60.0), "jab1 keeps its 20-frame length")
+	var stuck_full := []
+	for id in p1.moves:
+		await reset()
+		if id in ["nair", "fair", "dair"]:
+			p1.global_position = Vector2(-240, -260)
+			p1.sm.change(&"air")
+			await frames(2)
+		p1.start_move(id)
+		if not await wait_until(func(): return p1.sm.current_name != &"attack", 200):
+			stuck_full.append(id)
+	check(stuck_full.is_empty(), "every move runs and ends with the full-body rig %s" % [stuck_full])
+	await spawn("berserker", "valkyrie")
+	await reset()
+	var feet := [p1.global_position]
+	var foot_l := full_foot(p1, "FootL")
+	var foot_r := full_foot(p1, "FootR")
+	var rest_l := foot_l.global_position
+	var rest_r := foot_r.global_position
+	p1.start_move("jab1")
+	var drift := 0.0
+	for f in 20:
+		await frames(1)
+		drift = maxf(drift, maxf(foot_l.global_position.distance_to(rest_l + (p1.global_position - feet[0])),
+			foot_r.global_position.distance_to(rest_r + (p1.global_position - feet[0]))))
+	check(drift < 1.0, "feet stay planted through jab1 (max drift %.2f px)" % drift)
+
 	print("-- combat is identical with and without the art set")
 	for take in [["jab1"], ["fsmash"], ["ftilt"], ["jab1", "jab2", "jab3"]]:
 		Game.art_sets = {}
@@ -108,16 +172,19 @@ func _ready() -> void:
 		var v2 := await trace(take)
 		Game.art_sets = {"berserker": "rig"}
 		var cutout := await trace(take)
-		check(shipped == v2 and shipped == cutout and shipped.size() > 0,
-			"%s: %d frames of damage, knockback and positions match (shipped, v2, rig)" % [" > ".join(take), shipped.size()])
-	Game.art_sets = {"berserker": "rig"}
-	await spawn("berserker", "valkyrie")
-	await reset()
-	p2.global_position = p1.global_position + Vector2(60, 0)
-	await frames(3)
-	p1.start_move("jab1")
-	await frames(30)
-	check(is_equal_approx(p2.percent, 4.0), "rig light attack still deals 4%% (got %.1f)" % p2.percent)
+		Game.art_sets = {"berserker": "fullrig"}
+		var fullrig := await trace(take)
+		check(shipped == v2 and shipped == cutout and shipped == fullrig and shipped.size() > 0,
+			"%s: %d frames of damage, knockback and positions match (shipped, v2, rig, fullrig)" % [" > ".join(take), shipped.size()])
+	for set_name in ["rig", "fullrig"]:
+		Game.art_sets = {"berserker": set_name}
+		await spawn("berserker", "valkyrie")
+		await reset()
+		p2.global_position = p1.global_position + Vector2(60, 0)
+		await frames(3)
+		p1.start_move("jab1")
+		await frames(30)
+		check(is_equal_approx(p2.percent, 4.0), "%s light attack still deals 4%% (got %.1f)" % [set_name, p2.percent])
 
 	Game.art_sets = {}
 	print("PASS (0 failures)" if failures == 0 else "FAIL (%d failures)" % failures)
@@ -150,6 +217,19 @@ func pose_keys(f: Fighter, anim_name: String) -> Array:
 	for k in anim.track_get_key_count(t):
 		out.append(String(anim.track_get_key_value(t, k)))
 	return out
+
+
+## Path of a rig bone under the Skeleton node.
+func _bone_path(bone: String) -> String:
+	var chains := {"Hips": "Hips", "ThighL": "Hips/ThighL", "ShinL": "Hips/ThighL/ShinL", "ThighR": "Hips/ThighR",
+		"ShinR": "Hips/ThighR/ShinR", "Spine": "Hips/Spine", "Neck": "Hips/Spine/Neck",
+		"ShoulderL": "Hips/Spine/ShoulderL", "ElbowL": "Hips/Spine/ShoulderL/ElbowL",
+		"ShoulderR": "Hips/Spine/ShoulderR", "ElbowR": "Hips/Spine/ShoulderR/ElbowR"}
+	return chains[bone]
+
+
+func full_foot(f: Fighter, marker: String) -> Node2D:
+	return f.rig.find_child(marker, true, false)
 
 
 func sprite(f: Fighter) -> AnimatedSprite2D:
